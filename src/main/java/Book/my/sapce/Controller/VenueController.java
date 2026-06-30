@@ -48,7 +48,13 @@ public class VenueController {
         venueService.deleteVenue(id);
         return "venue deleted successfully";
     }
-    
+//    @PostMapping("/owner/{ownerId}/venue")
+//    public Venue createVenue(@PathVariable Long ownerId,
+//                             @RequestBody Venue venue) {
+//
+//        return venueService.createVenue(ownerId, venue);
+//    }
+
 
 
 }

@@ -2,9 +2,7 @@ package Book.my.sapce.Service;
 
 import Book.my.sapce.Model.Venue;
 import Book.my.sapce.Repository.VenueRepository;
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -43,10 +41,19 @@ public class VenueService {
     public List<Venue> getVenuesByOwner(Long ownerId) {
         return venueRepository.getVenueByOwner(ownerId);
     }
-
-
-//    public Optional<Venue> getVenueById(Long id) {
-//        return venueRepository.findById(id);
+//    public Venue createVenue(Long ownerId, Venue venue) {
+//
+//        Owner owner = venueRepository.findById(ownerId)
+//                .orElseThrow(() -> new RuntimeException("Owner not found"));
+//
+//        venue.setOwner(owner);
+//
+//        return venueRepository.save(venue);
 //    }
+
+
+    public Optional<Venue> getVenuesById(Long id) {
+        return venueRepository.findById(id);
+    }
 }
 

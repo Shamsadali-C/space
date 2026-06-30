@@ -14,12 +14,21 @@ public class Venue {
     private String location;
 
     private Double pricePerHour;
-
-//    private Double price;
-
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+
+//    private Double price;
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+
 
     public Long getId() {
         return id;
@@ -51,14 +60,6 @@ public class Venue {
 
     public void setPricePerHour(Double pricePerHour) {
         this.pricePerHour = pricePerHour;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
     }
 
 
