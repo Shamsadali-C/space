@@ -18,7 +18,7 @@ public class Venue {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-//    private Double price;
+
 
     public User getOwner() {
         return owner;
@@ -61,17 +61,5 @@ public class Venue {
     public void setPricePerHour(Double pricePerHour) {
         this.pricePerHour = pricePerHour;
     }
-
-
-
-
-//    public Double getPrice() {
-//        return price;
-//    }
-//
-//    public void setPrice(Double price) {
-//        this.price = price;
-//    }
-
 
 }

@@ -41,16 +41,6 @@ public class VenueService {
     public List<Venue> getVenuesByOwner(Long ownerId) {
         return venueRepository.getVenueByOwner(ownerId);
     }
-//    public Venue createVenue(Long ownerId, Venue venue) {
-//
-//        Owner owner = venueRepository.findById(ownerId)
-//                .orElseThrow(() -> new RuntimeException("Owner not found"));
-//
-//        venue.setOwner(owner);
-//
-//        return venueRepository.save(venue);
-//    }
-
 
     public Optional<Venue> getVenuesById(Long id) {
         return venueRepository.findById(id);

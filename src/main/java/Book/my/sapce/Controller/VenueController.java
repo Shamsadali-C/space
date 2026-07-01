@@ -1,6 +1,8 @@
 package Book.my.sapce.Controller;
 
+import Book.my.sapce.Model.User;
 import Book.my.sapce.Model.Venue;
+import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import Book.my.sapce.Service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ public class VenueController {
     @Autowired
     private VenueService venueService;
     private VenueRepository venueRepository;
+    private UserRepository userRepository;
 
     @PostMapping("/add")
     public Venue addVenue(@RequestBody Venue venue) {
@@ -55,6 +58,16 @@ public class VenueController {
 //        return venueService.createVenue(ownerId, venue);
 //    }
 
+    @PostMapping("/users/{ownerId}/venues")
+    public Venue addVenue(@PathVariable Long ownerId,
+                          @RequestBody Venue venue) {
 
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        venue.setOwner(owner);
+
+        return venueRepository.save(venue);
+    }
 
 }
