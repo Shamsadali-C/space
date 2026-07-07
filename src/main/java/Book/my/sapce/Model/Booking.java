@@ -1,9 +1,6 @@
 package Book.my.sapce.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
@@ -14,8 +11,10 @@ public class Booking {
     @GeneratedValue
     public Long id;
     @ManyToOne
+    @JoinColumn(name="user_id")
     private User user;
     @ManyToOne
+    @JoinColumn(name="venue_id")
     private Venue venue;
     private LocalDate date;
     private String status;

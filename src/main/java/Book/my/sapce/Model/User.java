@@ -3,6 +3,8 @@ package Book.my.sapce.Model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class User {
@@ -10,7 +12,10 @@ public class User {
     @Id
     @GeneratedValue
     public long id;
+
+    @NotBlank(message="Must Enter The Name")
     private String name;
+    @Email(message="Enter The Currect Format")
     private String email;
 
     public long getId() {

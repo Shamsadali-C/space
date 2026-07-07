@@ -12,7 +12,7 @@ import java.util.List;
 public class BookingController {
 
     @Autowired
-//  private BookingRepository bookingRepository;
+
     public BookingService bookingService;
 
     @PostMapping("/{userId}/{venueId}")

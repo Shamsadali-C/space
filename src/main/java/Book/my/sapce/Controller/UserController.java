@@ -2,7 +2,9 @@ package Book.my.sapce.Controller;
 
 import Book.my.sapce.Model.User;
 import Book.my.sapce.Service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,9 +19,8 @@ public class UserController {
 
 
     @PostMapping("/users")
-    public User CreateUser(@RequestBody User user) {
+    public User CreateUser(@Valid @RequestBody User user) {
         return userService.save(user);
-
     }
 
     @DeleteMapping("/{id}")
@@ -31,5 +32,9 @@ public class UserController {
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
 }
