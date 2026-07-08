@@ -33,19 +33,19 @@ public class VenueService {
     public List<Venue> getAllVenue() {
         return venueRepository.findAll();
     }
-
-    public Venue updateVenue(Long id, Venue newVenue) {
-
-        Venue venue = venueRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venue not found"));
-
-        venue.setVenueName(newVenue.getVenueName());
-        venue.setLocation(newVenue.getLocation());
-        venue.setPrice(newVenue.getPrice());
-
-
-        return venueRepository.save(venue);
-    }
+//
+//    public Venue updateVenue(Long id, Venue newVenue) {
+//
+//        Venue venue = venueRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Venue not found"));
+//
+//        venue.setVenueName(());
+//        venue.setLocation(newVenue.getLocation());
+//        venue.setPrice(newVenue.getPrice());
+//
+//
+//        return venueRepository.save(venue);
+//    }
 
     public void deleteVenue(Long id) {
         venueRepository.deleteById(id);

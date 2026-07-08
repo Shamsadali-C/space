@@ -9,7 +9,7 @@ public class VenueResponce {
     private Long id;
     private String venueName;
     private String location;
-    private double PricePerHour;
+    private double Price;
     private Long owner;
 
 

@@ -47,9 +47,9 @@ public class VenueController {
     @PutMapping("/venues/{id}")
     public Venue updateVenue(@PathVariable Long id, @RequestBody Venue venueDetails) {
         Venue venue = venueRepository.findById(id).orElseThrow();
-        venue.setLocation(venueDetails.getLocation());
-        venue.setPrice(venueDetails.getPrice());
-        venue.setVenueName(venueDetails.getVenueName());
+//        venue.setLocation(venueDetails.getLocation());
+//        venue.setPrice(venueDetails.getPrice());
+//        venue.setVenueName(venueDetails.getVenueName());
 //        venue.setOwner(getOwner());
         return venueRepository.save(venue);
     }
@@ -65,5 +65,5 @@ public class VenueController {
         venueService.deleteVenue(id);
         return "venue deleted successfully";
     }
-//    owner
+
 }

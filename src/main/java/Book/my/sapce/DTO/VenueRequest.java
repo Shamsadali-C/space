@@ -8,7 +8,7 @@ public class VenueRequest {
 
     private String location  ;
 
-    private double PricePerHour ;
+    private double Price ;
 
 
 }

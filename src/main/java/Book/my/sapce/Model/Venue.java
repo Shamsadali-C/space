@@ -16,15 +16,14 @@ public class Venue {
     @Id
     @GeneratedValue
     private Long id;
-    @Getter
+
     @NotBlank(message="Must Enter The Venue Name")
     private String venueName;
 
-    @Getter
     @NotBlank(message="Must Enter The Location Name")
     private String location;
 
-    @Getter
+
     @NotNull(message = "Must Enter The Price" )
     private Double price;
 
@@ -33,23 +32,23 @@ public class Venue {
     @JoinColumn(name = "owner_id",updatable=false)
     private Long owner;
 
-    public void setOwner(Long owner) {
+    public void setowner(Long owner) {
         this.owner = owner;
     }
 
-    public void setId(Long id) {
+    public void setid(Long id) {
         this.id = id;
     }
 
-    public void setVenueName(String venueName) {
+    public void setvenueName(String venueName) {
         this.venueName = venueName;
     }
 
-    public void setLocation(String location) {
+    public void setlocation(String location) {
         this.location = location;
     }
 
-    public void setPrice(Double price) {
+    public void setprice(Double price) {
         this.price = price;
     }
 
