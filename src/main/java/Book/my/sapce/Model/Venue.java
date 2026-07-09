@@ -36,6 +36,20 @@ public class Venue {
     @JoinColumn(name = "owner_id",updatable=false)
     private User owner;
 
+
+    private boolean available;
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+
+
+
     public void setOwner(User owner) {
         this.owner = owner;
     }

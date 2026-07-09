@@ -56,6 +56,7 @@ public class VenueService {
         venue.setLocation(venueDetails.getLocation());
         venue.setPrice(venueDetails.getPrice());
         venue.setOwner(venueDetails.getOwner());
+        venue.setAvailable(venueDetails.isAvailable());
 
         return venueRepository.save(venue);
     }
