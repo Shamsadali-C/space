@@ -11,20 +11,28 @@ public class User {
 
     @Id
     @GeneratedValue
-    public long id;
+    public Long id;
 
     @NotBlank(message="Must Enter The Name")
     private String name;
     @Email(message="Enter The Currect Format")
     private String email;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
+
+//    public long getId() {
+//        return id;
+//    }
+//
+//    public void setId(long id) {
+//        this.id = id;
+//    }
 
     public String getName() {
         return name;

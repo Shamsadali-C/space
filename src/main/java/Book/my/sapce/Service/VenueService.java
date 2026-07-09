@@ -1,13 +1,14 @@
 package Book.my.sapce.Service;
 
-import Book.my.sapce.DTO.VenueRequest;
-import Book.my.sapce.DTO.VenueResponce;
 import Book.my.sapce.Model.Venue;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,29 +24,9 @@ public class VenueService {
         return venueRepository.save(venue);
     }
 
-    public Venue updateOwner(Long venueId, Long ownerId) {
-        Venue venue = venueRepository.findById(venueId)
-                .orElseThrow(() -> new RuntimeException("Venue not found"));
-        venue.setOwnerId(ownerId);
-        return venueRepository.save(venue);
-    }
-
     public List<Venue> getAllVenue() {
         return venueRepository.findAll();
     }
-//
-//    public Venue updateVenue(Long id, Venue newVenue) {
-//
-//        Venue venue = venueRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Venue not found"));
-//
-//        venue.setVenueName(());
-//        venue.setLocation(newVenue.getLocation());
-//        venue.setPrice(newVenue.getPrice());
-//
-//
-//        return venueRepository.save(venue);
-//    }
 
     public void deleteVenue(Long id) {
         venueRepository.deleteById(id);
@@ -66,21 +47,22 @@ public class VenueService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    public Venue updateVenue(Long id, Venue venueDetails) {
+
+        Venue venue = venueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Venue not found"));
+
+        venue.setVenueName(venueDetails.getVenueName());
+        venue.setLocation(venueDetails.getLocation());
+        venue.setPrice(venueDetails.getPrice());
+        venue.setOwner(venueDetails.getOwner());
+
+        return venueRepository.save(venue);
+    }
 
 
-//
-//    public VenueResponce createVenue(VenueRequest request, Long userId) {
-//        Venue venue = Venue.builder()
-//                .venueName(request.getvenueName())
-//                .location(request.getLocation())
-//                .price(request.getPrice())
-//                .ownerId(userId)
-//                .build();
-//
-//        Venue saved=VenueRepository.save(venue)
-//                return maptoresponce(saved);
-//        }
-//    }
+
+
 
 
 }

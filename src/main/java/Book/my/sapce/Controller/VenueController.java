@@ -24,18 +24,6 @@ public class VenueController {
     public Venue addVenue(@Valid @RequestBody Venue venue) {
         return venueService.save(venue);
     }
-//    @PostMapping("/venues")
-//    public Venue addVenue( @PathVariable Long ownerId,
-//                      @RequestBody Venue venue) {
-//
-//      User owner = userRepository.findById(ownerId)
-//            .orElseThrow(() -> new RuntimeException("Owner not found"));
-//
-//      venue.setOwner(owner);
-//
-//       return venueRepository.save(venue);
-//    }
-
 
     @GetMapping
     public List<Venue> getVenue() {
@@ -43,23 +31,17 @@ public class VenueController {
         return venueService.getAllVenue();
     }
 
-
     @PutMapping("/venues/{id}")
-    public Venue updateVenue(@PathVariable Long id, @RequestBody Venue venueDetails) {
-        Venue venue = venueRepository.findById(id).orElseThrow();
-//        venue.setLocation(venueDetails.getLocation());
-//        venue.setPrice(venueDetails.getPrice());
-//        venue.setVenueName(venueDetails.getVenueName());
-//        venue.setOwner(getOwner());
-        return venueRepository.save(venue);
+    public Venue updateVenue(@PathVariable Long id, @RequestBody Venue venue) {
+        return venueService.updateVenue(id, venue);
     }
-
 
 
     @GetMapping("/{id}")
     public ResponseEntity<Venue> getVenueById(@PathVariable Long id) {
         return venueService.getVenueById(id);
     }
+
     @DeleteMapping("/{id}")
     public String deleteVenue(@PathVariable Long id) {
         venueService.deleteVenue(id);

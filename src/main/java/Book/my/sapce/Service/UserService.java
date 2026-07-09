@@ -31,10 +31,7 @@ public class UserService {
     public ResponseEntity<User> getUserById(Long id){
     Optional<User> user = userRepository.findById(id);
 
-        if (user.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } else {
-            return new ResponseEntity<>(user.get(), HttpStatus.OK);
-        }
+        return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }
