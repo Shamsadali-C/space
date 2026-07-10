@@ -1,5 +1,6 @@
 package Book.my.sapce.Controller;
 
+import Book.my.sapce.Model.Role;
 import Book.my.sapce.Model.User;
 import Book.my.sapce.Service.UserService;
 import jakarta.validation.Valid;
@@ -20,6 +21,13 @@ public class UserController {
 
     @PostMapping("/users")
     public User CreateUser(@Valid @RequestBody User user) {
+        user.setRole(Role.USER);
+        return userService.save(user);
+    }
+
+    @PostMapping("/owner")
+    public User CreateOwner(@RequestBody User user){
+        user.setRole(Role.OWNER);
         return userService.save(user);
     }
 

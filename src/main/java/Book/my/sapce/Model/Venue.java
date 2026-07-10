@@ -3,25 +3,21 @@ package Book.my.sapce.Model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
-@Table(name="venue")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Venue {
 
-    @Getter
     @Id
     @GeneratedValue(strategy =GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
+
     @NotBlank(message="Must Enter The Venue Name")
     private String venueName;
 

@@ -1,5 +1,6 @@
 package Book.my.sapce.Controller;
 
+import Book.my.sapce.DTO.VenueRequest;
 import Book.my.sapce.Model.Venue;
 import Book.my.sapce.Service.VenueService;
 import jakarta.validation.Valid;
@@ -23,8 +24,8 @@ public class VenueController {
     }
 
     @PostMapping("/add")
-    public Venue addVenue(@Valid @RequestBody Venue venue) {
-        return venueService.addVenue(venue);
+    public Venue addVenue(@Valid @RequestBody VenueRequest venueRequest) {
+        return venueService.addVenue(venueRequest);
     }
 
     @GetMapping

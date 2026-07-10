@@ -1,6 +1,8 @@
 package Book.my.sapce.Service;
 
+import Book.my.sapce.DTO.VenueRequest;
 import Book.my.sapce.Model.Venue;
+import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +18,21 @@ public class VenueService {
     @Autowired
     public VenueRepository venueRepository;
 
+    @Autowired
+    public UserRepository userRepository;
 
-    public Venue addVenue(Venue venue) {
+
+    public Venue addVenue(VenueRequest venueRequest) {
+//        User user = userRepository.findById(Integer.toUnsignedLong(1)).orElseThrow(()->new RuntimeException("NO User"));
+        Venue venue = Venue.builder()
+                .venueName(venueRequest.getVenueName())
+                .availableStatus(true)
+                .capacity(venueRequest.getCapacity())
+                .location(venueRequest.getLocation())
+                .price(venueRequest.getPrice())
+//                .owner(user)
+                .build();
+
         return venueRepository.save(venue);
     }
 

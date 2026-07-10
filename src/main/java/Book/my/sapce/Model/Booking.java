@@ -19,6 +19,8 @@ public class Booking {
     private LocalDate date;
     private String status;
 
+
+
     public Long getId() {
         return id;
     }
