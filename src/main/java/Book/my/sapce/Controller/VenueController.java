@@ -1,8 +1,6 @@
 package Book.my.sapce.Controller;
 
 import Book.my.sapce.Model.Venue;
-import Book.my.sapce.Repository.UserRepository;
-import Book.my.sapce.Repository.VenueRepository;
 import Book.my.sapce.Service.VenueService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +15,7 @@ public class VenueController {
 
     @Autowired
     private VenueService venueService;
-    private VenueRepository venueRepository;
-    private UserRepository userRepository;
+
 
 
     public VenueController(VenueService venueService){
