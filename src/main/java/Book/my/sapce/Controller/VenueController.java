@@ -20,9 +20,14 @@ public class VenueController {
     private VenueRepository venueRepository;
     private UserRepository userRepository;
 
+
+    public VenueController(VenueService venueService){
+        this.venueService=venueService;
+    }
+
     @PostMapping("/add")
     public Venue addVenue(@Valid @RequestBody Venue venue) {
-        return venueService.save(venue);
+        return venueService.addVenue(venue);
     }
 
     @GetMapping

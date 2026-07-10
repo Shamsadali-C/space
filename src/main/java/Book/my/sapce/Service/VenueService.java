@@ -17,7 +17,7 @@ public class VenueService {
     public VenueRepository venueRepository;
 
 
-    public Venue save(Venue venue) {
+    public Venue addVenue(Venue venue) {
         return venueRepository.save(venue);
     }
 
