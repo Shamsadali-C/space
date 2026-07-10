@@ -1,11 +1,14 @@
 package Book.my.sapce.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.management.relation.Role;
+@Getter
+@Setter
 @Entity
 public class User {
 
@@ -18,6 +21,8 @@ public class User {
     @Email(message="Enter The Currect Format")
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
     public Long getId() {
         return id;
     }
@@ -26,13 +31,7 @@ public class User {
         this.id = id;
     }
 
-//    public long getId() {
-//        return id;
-//    }
-//
-//    public void setId(long id) {
-//        this.id = id;
-//    }
+
 
     public String getName() {
         return name;

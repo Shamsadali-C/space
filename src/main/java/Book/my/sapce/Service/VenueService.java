@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,19 +30,13 @@ public class VenueService {
     }
 
 
-//
-//    public Optional<Venue> getVenuesById(Long id) {
-//        return venueRepository.findById(id);
-//    }
+
 
     public ResponseEntity<Venue> getVenueById(Long id) {
         Optional<Venue> venue = venueRepository.findById(id);
 
-        if (venue.isPresent()) {
-            return new ResponseEntity<>(venue.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return venue.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     public Venue updateVenue(Long id, Venue venueDetails) {
 
@@ -56,7 +47,7 @@ public class VenueService {
         venue.setLocation(venueDetails.getLocation());
         venue.setPrice(venueDetails.getPrice());
         venue.setOwner(venueDetails.getOwner());
-        venue.setAvailable(venueDetails.isAvailable());
+        venue.setAvailableStatus(venueDetails.isAvailableStatus());
 
         return venueRepository.save(venue);
     }

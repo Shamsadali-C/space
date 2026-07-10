@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name="venue")
 @AllArgsConstructor
@@ -15,44 +18,31 @@ public class Venue {
 
     @Getter
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy =GenerationType.IDENTITY)
     private Long id;
 
     @Getter
     @NotBlank(message="Must Enter The Venue Name")
     private String venueName;
 
-    @Getter
     @NotBlank(message="Must Enter The Location Name")
     private String location;
 
+    @NotNull
+    private Integer capacity;
 
-    @Getter
     @NotNull(message = "Must Enter The Price" )
     private Double price;
 
-    @Getter
+
     @ManyToOne
-    @JoinColumn(name = "owner_id",updatable=false)
+    @JoinColumn(name = "owner_id",nullable = false)
     private User owner;
 
-
-    private boolean available;
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
+    private boolean availableStatus;
 
 
 
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
 
     public Long getId() {
         return id;
@@ -62,42 +52,48 @@ public class Venue {
         this.id = id;
     }
 
+    public String getVenueName() {
+        return venueName;
+    }
+
     public void setVenueName(String venueName) {
         this.venueName = venueName;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public void setLocation(String location) {
         this.location = location;
     }
 
+    public Double getPrice() {
+        return price;
+    }
+
     public void setPrice(Double price) {
         this.price = price;
     }
 
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public boolean isAvailableStatus() {
+        return availableStatus;
+    }
+
+    public void setAvailableStatus(boolean availableStatus) {
+        this.availableStatus = availableStatus;
+    }
 
 
-    //    public void setowner(Long owner) {
-//        this.owner = owner;
-//    }
-//
-//    public void setid(Long id) {
-//        this.id = id;
-//    }
-//
-//    public void setvenueName(String venueName) {
-//        this.venueName = venueName;
-//    }
-//
-//    public void setlocation(String location) {
-//        this.location = location;
-//    }
-//
-//    public void setprice(Double price) {
-//        this.price = price;
-//    }
-//
-//    public void setOwnerId(Long ownerId) {
-//    }
+
 
 
 
