@@ -11,4 +11,5 @@ public class VenueRequest {
     private String location ;
     private Double price;
     private Integer capacity;
+
 }

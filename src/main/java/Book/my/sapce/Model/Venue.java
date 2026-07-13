@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.awt.image.BufferedImage;
+
 @Getter
 @Setter
 @Entity
@@ -36,7 +38,6 @@ public class Venue {
     private User owner;
 
     private boolean availableStatus;
-
 
 
 

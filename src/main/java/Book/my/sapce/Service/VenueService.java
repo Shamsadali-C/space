@@ -2,7 +2,6 @@ package Book.my.sapce.Service;
 
 import Book.my.sapce.DTO.VenueRequest;
 import Book.my.sapce.Model.Venue;
-import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,13 +17,13 @@ public class VenueService {
     @Autowired
     public VenueRepository venueRepository;
 
-    @Autowired
-    public UserRepository userRepository;
+//    @Autowired
+//    public UserRepository userRepository; // call-only object creating time, here I create with .builder()
 
 
     public Venue addVenue(VenueRequest venueRequest) {
 //        User user = userRepository.findById(Integer.toUnsignedLong(1)).orElseThrow(()->new RuntimeException("NO User"));
-        Venue venue = Venue.builder()
+        Venue venue = Venue.builder()  //object creation
                 .venueName(venueRequest.getVenueName())
                 .availableStatus(true)
                 .capacity(venueRequest.getCapacity())
@@ -61,7 +60,7 @@ public class VenueService {
         venue.setVenueName(venueDetails.getVenueName());
         venue.setLocation(venueDetails.getLocation());
         venue.setPrice(venueDetails.getPrice());
-        venue.setOwner(venueDetails.getOwner());
+//        venue.setOwner(venueDetails.getOwner());
         venue.setAvailableStatus(venueDetails.isAvailableStatus());
 
         return venueRepository.save(venue);

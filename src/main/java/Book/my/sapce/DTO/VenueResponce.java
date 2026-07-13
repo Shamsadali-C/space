@@ -10,5 +10,6 @@ public class VenueResponce {
     private User owner;
     private Boolean availableStatus;
 
+
 }
 
