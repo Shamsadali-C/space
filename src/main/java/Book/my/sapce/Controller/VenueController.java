@@ -32,6 +32,7 @@ public class VenueController {
 
     @PutMapping("/venues/{id}")
     public Venue updateVenue(@PathVariable Long id, @RequestBody Venue venue) {
+        venue.setId(id);
         return venueService.updateVenue(id, venue);
     }
 
