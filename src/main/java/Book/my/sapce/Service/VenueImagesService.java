@@ -39,7 +39,12 @@ public class VenueImagesService {
         return venueImagesRepository.save(image);
     }
     public List<VenueImages>  getImagesByVenue(Long venueId) {
+
         return venueImagesRepository.findByVenueId(venueId);
+    }
+
+    public List<VenueImages> getAllImages() {
+        return venueImagesRepository.findAll();
     }
 
 

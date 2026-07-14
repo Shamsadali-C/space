@@ -29,9 +29,22 @@ public class VenueImagesController {
 
     }
 
-    @GetMapping("/{id}")
+//    @GetMapping("/{id}")
+//    public ResponseEntity<List<VenueImages>> getImagesByVenue(@PathVariable Long venueId) {
+//
+//        return ResponseEntity.ok(venueImagesService.getImagesByVenue(venueId));
+//    }
+
+    @GetMapping("{venueId}")
     public ResponseEntity<List<VenueImages>> getImagesByVenue(@PathVariable Long venueId) {
         return ResponseEntity.ok(venueImagesService.getImagesByVenue(venueId));
     }
+
+
+    @GetMapping
+    public List<VenueImages> getImages() {
+        return venueImagesService.getAllImages();
+    }
+
 
 }
