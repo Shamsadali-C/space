@@ -6,12 +6,9 @@ import Book.my.sapce.Model.VenueImages;
 import Book.my.sapce.Repository.VenueImagesRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +25,7 @@ public class VenueImagesService {
         Venue venue = venueRepository.findById(dto.getVenueId())
                 .orElseThrow(() -> new RuntimeException("Venue not found!"));
 
-        // Max 3 images limit check
+        // Max 3 image limit check
         Long imageCount = venueImagesRepository.countByVenueId(dto.getVenueId());
         if (imageCount >= 3) {
             throw new RuntimeException("Maximum 3 images allowed per venue! " + "Please delete an existing image first.");

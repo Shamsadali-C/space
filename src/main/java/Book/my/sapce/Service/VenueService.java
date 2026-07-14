@@ -29,7 +29,7 @@ public class VenueService {
                 .capacity(venueRequest.getCapacity())
                 .location(venueRequest.getLocation())
                 .price(venueRequest.getPrice())
-//                .owner(user)
+                .owner(venueRequest.getUser())
                 .build();
 
         return venueRepository.save(venue);
@@ -60,15 +60,10 @@ public class VenueService {
         venue.setVenueName(venueDetails.getVenueName());
         venue.setLocation(venueDetails.getLocation());
         venue.setPrice(venueDetails.getPrice());
-//        venue.setOwner(venueDetails.getOwner());
+        venue.setOwner(venueDetails.getOwner());
         venue.setAvailableStatus(venueDetails.isAvailableStatus());
 
         return venueRepository.save(venue);
     }
-
-
-
-
-
 
 }

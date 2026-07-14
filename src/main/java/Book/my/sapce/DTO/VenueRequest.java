@@ -1,5 +1,6 @@
 package Book.my.sapce.DTO;
 
+import Book.my.sapce.Model.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,5 +12,6 @@ public class VenueRequest {
     private String location ;
     private Double price;
     private Integer capacity;
+    private User user;
 
 }

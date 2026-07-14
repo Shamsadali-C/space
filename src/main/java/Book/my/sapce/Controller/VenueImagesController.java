@@ -1,7 +1,6 @@
 package Book.my.sapce.Controller;
 
 import Book.my.sapce.DTO.VenueImagesDTO;
-import Book.my.sapce.Model.Venue;
 import Book.my.sapce.Model.VenueImages;
 import Book.my.sapce.Service.VenueImagesService;
 import jakarta.validation.Valid;
@@ -31,8 +30,7 @@ public class VenueImagesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<VenueImages>> getImagesByVenue(
-            @PathVariable Long venueId) {
+    public ResponseEntity<List<VenueImages>> getImagesByVenue(@PathVariable Long venueId) {
         return ResponseEntity.ok(venueImagesService.getImagesByVenue(venueId));
     }
 
