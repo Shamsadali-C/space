@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Table(name="user")
 @Entity
 public class User {
 
@@ -17,10 +18,11 @@ public class User {
 
     @NotBlank(message="Must Enter The Name")
     private String name;
-    @Email(message="Enter The Currect Format")
+    @Email(message="Enter The Correct Format")
     private String email;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
 
 }

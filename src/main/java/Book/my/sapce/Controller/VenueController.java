@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,10 +18,9 @@ public class VenueController {
     @Autowired
     private VenueService venueService;
 
-
     
     @PostMapping("/add")
-    public Venue addVenue(@Valid @RequestBody VenueRequest venueRequest) {
+    public Venue addVenue(@Valid @RequestBody VenueRequest venueRequest, List<MultipartFile> imageFiles) {
         return venueService.addVenue(venueRequest);
     }
 

@@ -11,6 +11,4 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
 
 
 
-
-
 }

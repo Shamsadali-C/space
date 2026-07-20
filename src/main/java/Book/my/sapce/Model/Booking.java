@@ -1,9 +1,15 @@
 package Book.my.sapce.Model;
 
 import jakarta.persistence.*;
-
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
+
+@Getter
+@Setter
+@Table(name = "booking")
 @Entity
 public class Booking {
 
@@ -16,9 +22,30 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name="venue_id")
     private Venue venue;
-    private LocalDate date;
-    private String status;
 
+    private LocalDate date;
+
+    private LocalTime time;
+
+
+    private String BookingStatus;
+
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public String getBookingStatus() {
+        return BookingStatus;
+    }
+
+    public void setBookingStatus(String bookingStatus) {
+        BookingStatus = bookingStatus;
+    }
 
 
     public Long getId() {
@@ -52,15 +79,5 @@ public class Booking {
     public void setDate(LocalDate date) {
         this.date = date;
     }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-
 
 }

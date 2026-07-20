@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 @Getter
 @Setter
 @Entity
+@Table(name = "venue")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

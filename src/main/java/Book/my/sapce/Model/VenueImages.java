@@ -2,11 +2,13 @@ package Book.my.sapce.Model;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Table(name = "venue_images")
 @Data
+@Builder
 public class VenueImages {
 
     @Id
@@ -14,10 +16,6 @@ public class VenueImages {
     public Long id;
 
     private String imageUrl;
-
-    private String imageName;
-
-    private String imageType;
 
     @ManyToOne
     @JoinColumn(name = "venue_id")

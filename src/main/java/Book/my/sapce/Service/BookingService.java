@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -36,8 +37,11 @@ public class BookingService {
 
      booking.setUser(user);
      booking.setVenue(venue);
-     booking.setStatus("PENDING");
+     booking.setBookingStatus("PENDING");
      booking.setDate(LocalDate.now());
+     booking.setTime(LocalTime.now());
+
+
      return bookingRepository.save(booking);
  }
     public List<Booking> getAllBooking() {

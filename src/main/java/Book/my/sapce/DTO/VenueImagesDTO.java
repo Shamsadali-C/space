@@ -10,12 +10,14 @@ public class VenueImagesDTO {
     @NotNull(message = "Venue ID is required")
     private Long venueId;
 
-    @NotBlank(message = "Image URL cannot be empty")
+//    @NotBlank(message = "Image URL cannot be empty")
     private String imageUrl;
 
-    @NotBlank(message = "Image name cannot be empty")
-    private String imageName;
+//    @NotBlank(message = "Image name cannot be empty")
+//    private String imageName;
+//
+//    @NotBlank(message = "Image type cannot be empty")
+//    private String imageType;
 
-    @NotBlank(message = "Image type cannot be empty")
-    private String imageType;
+
 }
