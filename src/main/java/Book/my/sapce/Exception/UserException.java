@@ -1,4 +1,4 @@
-package Book.my.sapce.Exeption;
+package Book.my.sapce.Exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
