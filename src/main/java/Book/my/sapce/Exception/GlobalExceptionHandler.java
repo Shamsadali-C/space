@@ -16,6 +16,13 @@ public class GlobalExceptionHandler extends RuntimeException{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException e) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("message", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 
 
 

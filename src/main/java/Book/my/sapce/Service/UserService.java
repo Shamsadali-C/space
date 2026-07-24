@@ -1,8 +1,10 @@
 package Book.my.sapce.Service;
 
+import Book.my.sapce.Exception.ResourceNotFoundException;
 import Book.my.sapce.Model.User;
 import Book.my.sapce.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,5 +35,6 @@ public class UserService {
 
         return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
     }
 }

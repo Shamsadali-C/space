@@ -1,5 +1,6 @@
 package Book.my.sapce.Service;
 
+import Book.my.sapce.DTO.BookingDetailsDTO;
 import Book.my.sapce.Model.Booking;
 import Book.my.sapce.Model.User;
 import Book.my.sapce.Model.Venue;
@@ -8,7 +9,6 @@ import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,13 +25,13 @@ public class BookingService {
     @Autowired
     public UserRepository userRepository;
 
- @PostMapping("{id}/{Venueid}")
+
     public Booking CreateBooking (Long UserId ,Long VenueId) {
 
      User user = userRepository.findById(UserId)
-             .orElseThrow();
+             .orElseThrow(()->new RuntimeException("User Does not exist"));
      Venue venue = venueRepository.findById(VenueId)
-             .orElseThrow();
+             .orElseThrow(() ->new RuntimeException("Venue doesn't Exist"));
 
      Booking booking = new Booking();
 
@@ -40,7 +40,6 @@ public class BookingService {
      booking.setBookingStatus("PENDING");
      booking.setDate(LocalDate.now());
      booking.setTime(LocalTime.now());
-
 
      return bookingRepository.save(booking);
  }
@@ -52,5 +51,35 @@ public class BookingService {
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
     }
+
+//    public BookingDetailsDTO getBookingDetails(Long BookingId){
+//    Booking booking = bookingRepository.findByIdAndUserId(bookingId, currentUser.getId())
+//            .orElseThrow(() -> {
+//                return new BookingNotFoundException(bookingId);
+//            });
+
+
+
+    public BookingService(BookingRepository bookingRepository) {
+        this.bookingRepository = bookingRepository;
+    }
+
+
+
+    public BookingDetailsDTO getBookingDetails(Long bookingId, User user) {
+
+        Booking booking = bookingRepository.findByIdAndUserId(bookingId, user.getId())
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        BookingDetailsDTO dto = new BookingDetailsDTO();
+        dto.setBookingId(booking.getId());
+        dto.setTime(booking.getTime());
+        dto.setDate(booking.getDate());
+        dto.setBookingStatus(booking.getBookingStatus());
+
+        return dto;
+    }
+
+
 
 }

@@ -1,6 +1,6 @@
 package Book.my.sapce.Controller;
 
-import Book.my.sapce.DTO.VenueRequest;
+import Book.my.sapce.DTO.VenueRequestDTO;
 import Book.my.sapce.Model.Venue;
 import Book.my.sapce.Service.VenueService;
 import jakarta.validation.Valid;
@@ -20,7 +20,7 @@ public class VenueController {
 
     
     @PostMapping("/add")
-    public Venue addVenue(@Valid @RequestBody VenueRequest venueRequest, List<MultipartFile> imageFiles) {
+    public Venue addVenue(@Valid @RequestBody VenueRequestDTO venueRequest, List<MultipartFile> imageFiles) {
         return venueService.addVenue(venueRequest);
     }
 

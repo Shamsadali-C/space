@@ -40,8 +40,6 @@ public class Venue {
 
     private boolean availableStatus;
 
-
-
     public Long getId() {
         return id;
     }
@@ -64,6 +62,14 @@ public class Venue {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
     }
 
     public Double getPrice() {
@@ -89,10 +95,4 @@ public class Venue {
     public void setAvailableStatus(boolean availableStatus) {
         this.availableStatus = availableStatus;
     }
-
-
-
-
-
-
 }

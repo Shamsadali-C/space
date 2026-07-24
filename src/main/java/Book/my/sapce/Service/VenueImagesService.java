@@ -24,7 +24,6 @@ public class VenueImagesService {
 
     public void uploadfile(VenueImagesDTO dto, List<MultipartFile> file) {
 
-
         Venue venue = venueRepository.findById(dto.getVenueId())
                 .orElseThrow(() -> new RuntimeException("Venue not found!"));
 
@@ -32,7 +31,7 @@ public class VenueImagesService {
         Long imageCount = venueImagesRepository.countByVenueId(dto.getVenueId());
         if (imageCount + file.size() >= 3) {
             throw new RuntimeException("Maximum 3 images allowed per venue! " + "Please delete an existing image first.");
-        }// limit set cheythath 3
+        }   // limit set cheythath 3
         List<VenueImages> venueImagesList= new ArrayList<>();
         for(MultipartFile image:file){
             int extensionIndex =image.getOriginalFilename().lastIndexOf('.');
@@ -53,7 +52,6 @@ public class VenueImagesService {
 //        for(VenueImages venueImage :venueImagesList){
 //
 //            venueImagesRepository.save(venueImage);
-//
 //        }
 
     }

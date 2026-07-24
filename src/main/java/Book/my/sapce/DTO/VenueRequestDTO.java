@@ -1,12 +1,14 @@
 package Book.my.sapce.DTO;
 
 import Book.my.sapce.Model.User;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class VenueRequest {
+@Data
+public class VenueRequestDTO {
 
     private String venueName;
     private String location ;

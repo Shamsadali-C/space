@@ -1,6 +1,6 @@
 package Book.my.sapce.Service;
 
-import Book.my.sapce.DTO.VenueRequest;
+import Book.my.sapce.DTO.VenueRequestDTO;
 import Book.my.sapce.Model.Venue;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class VenueService {
 //    public UserRepository userRepository; // call-only object creating time, here I create with .builder()
 
 
-    public Venue addVenue(VenueRequest venueRequest) {
+    public Venue addVenue(VenueRequestDTO venueRequest) {
 //        User user = userRepository.findById(Integer.toUnsignedLong(1)).orElseThrow(()->new RuntimeException("NO User"));
         Venue venue = Venue.builder()  //object creation
                 .venueName(venueRequest.getVenueName())

@@ -24,24 +24,6 @@ public class VenueImagesController {
 
      public static final String FILE_UPLOAD_DIR="C:\\Users\\Shamsadali\\OneDrive\\intership\\upload\\";
 
-//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<String> addImage(@ModelAttribute VenueImagesDTO dto, @RequestParam ("file")List<MultipartFile> file) {
-//        venueImagesService.addImage(dto, file);
-//     try {
-//         File dir = new File(FILE_UPLOAD_DIR);
-//         if (!dir.exists())
-//         dir.mkdirs();
-//
-//
-//         File filepath = FILE_UPLOAD_DIR + file.getOriginalFilename();
-//         file.transferTo(new File(filepath));
-//
-//     } catch (Exception e){
-//         return ResponseEntity.;
-//     }
-//
-//        return ResponseEntity.ok("Images uploaded successfully.");
-//    }
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadfile(@RequestParam ("file")MultipartFile file) {
