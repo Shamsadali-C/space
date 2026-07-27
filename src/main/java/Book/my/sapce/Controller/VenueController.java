@@ -20,7 +20,7 @@ public class VenueController {
 
     
     @PostMapping("/add")
-    public Venue addVenue(@Valid @RequestBody VenueRequestDTO venueRequest, List<MultipartFile> imageFiles) {
+    public Venue addVenue(@Valid @RequestBody VenueRequestDTO venueRequest) {
         return venueService.addVenue(venueRequest);
     }
 

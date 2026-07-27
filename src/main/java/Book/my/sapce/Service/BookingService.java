@@ -52,19 +52,9 @@ public class BookingService {
         bookingRepository.deleteById(id);
     }
 
-//    public BookingDetailsDTO getBookingDetails(Long BookingId){
-//    Booking booking = bookingRepository.findByIdAndUserId(bookingId, currentUser.getId())
-//            .orElseThrow(() -> {
-//                return new BookingNotFoundException(bookingId);
-//            });
-
-
-
     public BookingService(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
-
-
 
     public BookingDetailsDTO getBookingDetails(Long bookingId, User user) {
 
