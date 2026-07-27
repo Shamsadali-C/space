@@ -36,28 +36,6 @@ public class VenueImagesController {
                 .body("Image Uploaded Succesfully");
 
 
-//          try {
-//                 File dir = new File(FILE_UPLOAD_DIR);
-//                 if (!dir.exists()){
-//                      dir.mkdirs();
-//                      }
-//                    if (file.isEmpty()){
-//                        return ResponseEntity
-//                                .badRequest()
-//                                .body("Select A File");
-//                    }
-//
-//                 File filepath = new File(FILE_UPLOAD_DIR + file.getOriginalFilename());
-//                 file.transferTo(filepath);
-//
-//                 return ResponseEntity
-//                         .status(HttpStatus.CREATED)
-//                         .body("file upload successfully" + file.getOriginalFilename());
-//          }catch (IOException e){
-//            return ResponseEntity
-//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Error uploading file" + e.getMessage());
-//          }
 
     }
 
