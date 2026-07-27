@@ -6,9 +6,13 @@ import Book.my.sapce.Model.VenueImages;
 import Book.my.sapce.Repository.VenueImagesRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +25,8 @@ public class VenueImagesService {
     public final VenueImagesRepository venueImagesRepository;
     public final VenueRepository venueRepository;
 
+    public static final String FILE_UPLOAD_DIR = "C:\\Users\\Shamsadali\\OneDrive\\intership\\upload\\";
+
 
     public void uploadfile(VenueImagesDTO dto, List<MultipartFile> file) {
 
@@ -29,35 +35,52 @@ public class VenueImagesService {
 
 
         Long imageCount = venueImagesRepository.countByVenueId(dto.getVenueId());
-        if (imageCount + file.size() >= 3) {
-            throw new RuntimeException("Maximum 3 images allowed per venue! " + "Please delete an existing image first.");
+        if (imageCount + file.size() > 3) {
+            throw new RuntimeException("Maximum 3 images allowed per venue!. ");
         }   // limit set cheythath 3
-        List<VenueImages> venueImagesList= new ArrayList<>();
-        for(MultipartFile image:file){
-            int extensionIndex =image.getOriginalFilename().lastIndexOf('.');
-            String extension = image.getOriginalFilename().substring(extensionIndex);
-            String imageUrl = UUID.randomUUID()+extension;
 
-            VenueImages images1 = VenueImages.builder()
-                    .imageUrl(imageUrl)
+        File dir = new File(FILE_UPLOAD_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+
+        List<VenueImages> venueImagesList = new ArrayList<>();
+        for (MultipartFile image : file) {
+            if (image.isEmpty()) {
+                continue;
+            }
+            String originalName = image.getOriginalFilename();
+            int index = originalName.lastIndexOf(".");
+            String extension = originalName.substring(index);
+
+            String imageName =
+                    UUID.randomUUID().toString() + extension;
+
+            try {
+
+                File destination = new File(FILE_UPLOAD_DIR, imageName);
+
+                image.transferTo(destination);
+
+            } catch (IOException e) {
+                throw new RuntimeException("File Upload Failed");
+            }
+            VenueImages venueImages = VenueImages.builder()
+                    .imageUrl(imageName)
                     .venue(venue)
                     .build();
 
-            venueImagesList.add(images1);
+            venueImagesList.add(venueImages);
 
         }
 
         venueImagesRepository.saveAll(venueImagesList);
 
-//        for(VenueImages venueImage :venueImagesList){
-//
-//            venueImagesRepository.save(venueImage);
-//        }
-
     }
-    public List<VenueImages>  getImagesByVenue(Long venueId) {
+    public List<VenueImages>  getImagesByVenue(Long id) {
 
-        return venueImagesRepository.findByVenueId(venueId);
+        return venueImagesRepository.findByVenueId(id);
     }
 
     public List<VenueImages> getAllImages() {
@@ -65,6 +88,31 @@ public class VenueImagesService {
     }
 
 
-    public void deleteVenueId(Long venueId) {venueImagesRepository.deleteById(venueId);
+    public void deleteVenueId(Long id) {venueImagesRepository.deleteById(id);
     }
 }
+
+
+
+//            String originalFileName= file.getOriginalFilename();
+//            int extensionIndex =OriginalName.lastIndexOf('.');
+//            String extension = image.getOriginalFilename().substring(extensionIndex);
+//            String imageUrl = UUID.randomUUID().toString()+extension;
+//
+//            VenueImages images1 = VenueImages.builder()
+//                    .imageUrl(imageUrl)
+//                    .venue(venue)
+//                    .build();
+//
+//            venueImagesList.add(images1);
+//
+//        }
+//
+//        venueImagesRepository.saveAll(venueImagesList);
+//
+//        for(VenueImages venueImage :venueImagesList){
+//
+//            venueImagesRepository.save(venueImage);
+//        }
+
+

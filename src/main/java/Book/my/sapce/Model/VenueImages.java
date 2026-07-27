@@ -2,13 +2,16 @@ package Book.my.sapce.Model;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Entity
 @Table(name = "venue_images")
 @Data
 @Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class VenueImages {
 
     @Id
