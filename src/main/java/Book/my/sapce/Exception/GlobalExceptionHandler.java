@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GlobalExceptionHandler extends RuntimeException{
+public class GlobalExceptionhandler extends RuntimeException{
+
 
         @ExceptionHandler(RuntimeException.class)
         public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
@@ -16,16 +17,18 @@ public class GlobalExceptionHandler extends RuntimeException{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException e) {
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException e) {
 
-        Map<String, String> error = new HashMap<>();
-        error.put("message", e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
+
+
     }
 
 
-
-}
 
 

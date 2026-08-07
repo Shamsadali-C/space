@@ -1,9 +1,7 @@
 package Book.my.sapce.Service;
 
 import Book.my.sapce.Model.User;
-import Book.my.sapce.Model.UserPrinciple;
 import Book.my.sapce.Repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

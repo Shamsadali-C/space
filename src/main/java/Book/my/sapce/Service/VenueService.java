@@ -1,7 +1,10 @@
 package Book.my.sapce.Service;
 
 import Book.my.sapce.DTO.VenueRequestDTO;
+import Book.my.sapce.Model.Booking;
+import Book.my.sapce.Model.BookingStatus;
 import Book.my.sapce.Model.Venue;
+import Book.my.sapce.Model.VenueStatus;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,11 +28,11 @@ public class VenueService {
 //        User user = userRepository.findById(Integer.toUnsignedLong(1)).orElseThrow(()->new RuntimeException("NO User"));
         Venue venue = Venue.builder()  //object creation
                 .venueName(venueRequest.getVenueName())
-                .availableStatus(true)
+//                .availableStatus(true)
                 .capacity(venueRequest.getCapacity())
                 .location(venueRequest.getLocation())
                 .price(venueRequest.getPrice())
-                .owner(venueRequest.getUser())
+                .owner(venueRequest.getOwner())
                 .build();
 
         return venueRepository.save(venue);
@@ -61,9 +64,29 @@ public class VenueService {
         venue.setLocation(venueDetails.getLocation());
         venue.setPrice(venueDetails.getPrice());
         venue.setOwner(venueDetails.getOwner());
-        venue.setAvailableStatus(venueDetails.isAvailableStatus());
+//        venue.setAvailableStatus(venueDetails.isAvailableStatus());
 
         return venueRepository.save(venue);
     }
+
+    public Venue maintanence(Long venueId){
+        Venue v=venueRepository.findById(venueId)
+                .orElseThrow(()->new RuntimeException("venue not found"));
+        v.setStatus(VenueStatus.MAINTANENCE);
+
+
+        return venueRepository.save(v);
+    }
+
+    public Venue holiday(Long venueId){
+        Venue v=venueRepository.findById(venueId)
+                .orElseThrow(()->new RuntimeException("venue not found"));
+        v.setStatus(VenueStatus.HOLIDAY);
+
+
+        return venueRepository.save(v);
+    }
+
+
 
 }

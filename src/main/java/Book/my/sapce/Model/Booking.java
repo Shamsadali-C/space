@@ -10,6 +10,13 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Table(name = "booking")
+//@Table(uniqueConstraints = @UniqueConstraint(
+//        columnNames ={
+//                "venueId",
+//                "booking_time",
+//                "booking_date"
+//        }
+//        ))
 @Entity
 public class Booking {
 
@@ -23,12 +30,14 @@ public class Booking {
     @JoinColumn(name="venue_id")
     private Venue venue;
 
+    private String bookingStatus;
+
     private LocalDate date;
 
     private LocalTime time;
 
 
-    private String BookingStatus;
+
 
 
     public LocalTime getTime() {
@@ -39,13 +48,7 @@ public class Booking {
         this.time = time;
     }
 
-    public String getBookingStatus() {
-        return BookingStatus;
-    }
 
-    public void setBookingStatus(String bookingStatus) {
-        BookingStatus = bookingStatus;
-    }
 
 
     public Long getId() {

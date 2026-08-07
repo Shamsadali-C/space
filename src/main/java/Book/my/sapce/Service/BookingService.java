@@ -2,6 +2,7 @@ package Book.my.sapce.Service;
 
 import Book.my.sapce.DTO.BookingDetailsDTO;
 import Book.my.sapce.Model.Booking;
+import Book.my.sapce.Model.BookingStatus;
 import Book.my.sapce.Model.User;
 import Book.my.sapce.Model.Venue;
 import Book.my.sapce.Repository.BookingRepository;
@@ -70,6 +71,32 @@ public class BookingService {
         return dto;
     }
 
+    public Booking approve(Long bookingId) {
+        Booking booking=bookingRepository.findById(bookingId)
+                .orElseThrow(()->new RuntimeException("Booking not found"));
+
+      booking.setBookingStatus(BookingStatus.ACCEPTED.name());
+
+        return bookingRepository.save(booking);
+    }
+
+    public Booking cancel(Long bookingId) {
+        Booking booking=bookingRepository.findById(bookingId)
+                .orElseThrow(()->new RuntimeException("Booking not found"));
+
+        booking.setBookingStatus(BookingStatus.CANCELLED.name());
+
+        return bookingRepository.save(booking);
+    }
+
+    public Booking reject(Long bookingId) {
+        Booking booking=bookingRepository.findById(bookingId)
+                .orElseThrow(()->new RuntimeException("Booking not found"));
+
+        booking.setBookingStatus(BookingStatus.REJECTED.name());
+
+        return bookingRepository.save(booking);
+    }
 
 
 }

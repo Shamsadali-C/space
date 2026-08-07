@@ -3,9 +3,11 @@ package Book.my.sapce.Controller;
 import Book.my.sapce.DTO.BookingDetailsDTO;
 import Book.my.sapce.Model.Booking;
 import Book.my.sapce.Model.User;
+import Book.my.sapce.Repository.BookingRepository;
 import Book.my.sapce.Service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,18 +27,36 @@ public class BookingController {
             throw new RuntimeException(e.getMessage());
         }
     }
-
-    @GetMapping
-    public List<Booking> getBooking() {
-        return bookingService.getAllBooking();
-
-
+    @PreAuthorize("hasRole('OWNER')")
+    @PutMapping("/Approve/{bookingId}")
+    public ResponseEntity<?> approve(@RequestParam Long bookingId){
+        return ResponseEntity.ok(bookingService.approve(bookingId));
     }
+
+    @PreAuthorize("hasRole('OWNER')")
+    @PutMapping("/cancel/{bookingId}")
+    public ResponseEntity<?> cancel(@RequestParam Long bookingId){
+        return ResponseEntity.ok(bookingService.cancel(bookingId));
+    }
+
+    @PreAuthorize("hasRole('OWNER')")
+    @PutMapping("/Reject/{bookingId}")
+    public ResponseEntity<?> reject(@RequestParam Long bookingId){
+        return ResponseEntity.ok(bookingService.reject(bookingId));
+    }
+
+
+//    @GetMapping
+//    public List<Booking> getBooking() {
+//        return bookingService.getAllBooking();
+//    }
+
     @DeleteMapping("/{id}")
     public String deleteBooking(@PathVariable Long id) {
         bookingService.deleteBooking(id);
         return "Booking deleted successfully";
     }
+
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<BookingDetailsDTO> getBookingDetails(

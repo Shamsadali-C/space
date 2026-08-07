@@ -7,11 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class LoginDTO {
+public class LoginRequestDTO {
 
     private String username;
     private String password;
-    private String email;
+
 
 
 }

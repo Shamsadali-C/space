@@ -29,7 +29,8 @@ public class VenueImagesController {
 
 
     @PostMapping(value = "/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadfile(@Valid @ModelAttribute VenueImagesDTO dto, @RequestParam("files") List<MultipartFile> file) {
+    public ResponseEntity<String> uploadfile(@Valid @ModelAttribute VenueImagesDTO dto,
+                                             @RequestParam("files") List<MultipartFile> file) {
 
         venueImagesService.uploadfile(dto, file);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -46,14 +47,14 @@ public class VenueImagesController {
 
 
     @DeleteMapping("/{id}")
-    public String deleteImage(@PathVariable Long id){
-        venueImagesService.deleteVenueId(id);
+    public String deleteImage(@PathVariable Long VenueId){
+        venueImagesService.deleteVenueId(VenueId);
                 return("Image Deleted Successfully");
     }
 
-    @GetMapping
-    public List<VenueImages> getImages() {
-        return venueImagesService.getAllImages();
-    }
+//    @GetMapping
+//    public List<VenueImages> getImages() {
+//        return venueImagesService.getAllImages();
+//    }
 
 }

@@ -1,8 +1,6 @@
 package Book.my.sapce.Controller;
 
-import Book.my.sapce.Model.Booking;
-import Book.my.sapce.Model.User;
-import Book.my.sapce.Model.Venue;
+import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.BookingRepository;
 import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
@@ -32,9 +30,9 @@ public class AdminController {
         map.put("totalVenues", venueRepository.count());
         map.put("totalBookings", bookingRepository.count());
 
-        map.put("users", userRepository.countByRole("USER"));
-        map.put("owners", userRepository.countByRole("OWNER"));
-        map.put("admins", userRepository.countByRole("ADMIN"));
+        map.put("users", userRepository.countByRole(Role.USER));
+        map.put("owners", userRepository.countByRole(Role.OWNER));
+        map.put("admins", userRepository.countByRole(Role.ADMIN));
 
         map.put("pendingBookings", bookingRepository.countByBookingStatus("PENDING"));
         map.put("rejectedBookings", bookingRepository.countByBookingStatus("REJECTED"));

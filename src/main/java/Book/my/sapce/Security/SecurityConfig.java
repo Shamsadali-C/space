@@ -34,27 +34,27 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
        http.csrf(csrf -> csrf.disable())
                .authorizeHttpRequests(auth -> auth
-                       .requestMatchers("/register").permitAll()
+                       .requestMatchers("/auth").permitAll()
                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                       .requestMatchers("/user/**").hasAuthority("USER")
-                       .requestMatchers("/venue/**").hasAuthority("OWNER")
-                       .requestMatchers("/booking").hasAnyAuthority("USER","OWNER")
+                       .requestMatchers("/user/**").hasAnyAuthority("USER","ADMIN")
+                       .requestMatchers("/venue/**").hasAnyAuthority("OWNER","ADMIN")
+                       .requestMatchers("/booking/**").hasAnyAuthority("USER","OWNER","ADMIN")
                        .anyRequest().authenticated()
                )
+//               .sessionManagement(session->
+//               session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
                .formLogin(Customizer.withDefaults())
-               .logout(log ->log
-                       .logoutUrl("/logout")
-                       .logoutSuccessUrl("/login?logout")
-                       .permitAll())
+//               .logout(log ->log
+//                       .logoutUrl("/logout")
+//                       .logoutSuccessUrl("/login?logout")
+//                       .permitAll())
                .httpBasic(Customizer.withDefaults());
 
 
        return http.build();
 
 
-//           .sessionManagement(session->
-//               session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 
    }

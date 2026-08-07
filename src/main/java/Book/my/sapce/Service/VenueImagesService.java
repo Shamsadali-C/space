@@ -6,8 +6,7 @@ import Book.my.sapce.Model.VenueImages;
 import Book.my.sapce.Repository.VenueImagesRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,8 +20,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VenueImagesService {
 
-
+    @Autowired
     public final VenueImagesRepository venueImagesRepository;
+    @Autowired
     public final VenueRepository venueRepository;
 
     public static final String FILE_UPLOAD_DIR = "C:\\Users\\Shamsadali\\OneDrive\\intership\\upload\\";
@@ -44,7 +44,6 @@ public class VenueImagesService {
             dir.mkdirs();
         }
 
-
         List<VenueImages> venueImagesList = new ArrayList<>();
         for (MultipartFile image : file) {
             if (image.isEmpty()) {
@@ -55,7 +54,7 @@ public class VenueImagesService {
             String extension = originalName.substring(index);
 
             String imageName =
-                    UUID.randomUUID().toString() + extension;
+                    UUID.randomUUID()+ extension;
 
             try {
 
@@ -91,28 +90,3 @@ public class VenueImagesService {
     public void deleteVenueId(Long id) {venueImagesRepository.deleteById(id);
     }
 }
-
-
-
-//            String originalFileName= file.getOriginalFilename();
-//            int extensionIndex =OriginalName.lastIndexOf('.');
-//            String extension = image.getOriginalFilename().substring(extensionIndex);
-//            String imageUrl = UUID.randomUUID().toString()+extension;
-//
-//            VenueImages images1 = VenueImages.builder()
-//                    .imageUrl(imageUrl)
-//                    .venue(venue)
-//                    .build();
-//
-//            venueImagesList.add(images1);
-//
-//        }
-//
-//        venueImagesRepository.saveAll(venueImagesList);
-//
-//        for(VenueImages venueImage :venueImagesList){
-//
-//            venueImagesRepository.save(venueImage);
-//        }
-
-

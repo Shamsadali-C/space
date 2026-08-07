@@ -38,7 +38,20 @@ public class Venue {
     @JoinColumn(name = "owner_id",nullable = false)
     private User owner;
 
-    private boolean availableStatus;
+//    private boolean availableStatus;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VenueStatus status=VenueStatus.AVAILABLE;
+
+//    public boolean isAvailableStatus() {
+//        return availableStatus;
+//    }
+//
+//    public void setAvailableStatus(boolean availableStatus) {
+//        this.availableStatus = availableStatus;
+//    }
 
     public Long getId() {
         return id;
@@ -88,11 +101,4 @@ public class Venue {
         this.owner = owner;
     }
 
-    public boolean isAvailableStatus() {
-        return availableStatus;
     }
-
-    public void setAvailableStatus(boolean availableStatus) {
-        this.availableStatus = availableStatus;
-    }
-}
