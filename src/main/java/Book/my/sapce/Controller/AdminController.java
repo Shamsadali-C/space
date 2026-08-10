@@ -4,7 +4,6 @@ import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.BookingRepository;
 import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +15,19 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
+
+    private final UserRepository userRepository;
     private VenueRepository venueRepository;
-    @Autowired
     private BookingRepository bookingRepository;
+
+    public AdminController(UserRepository userRepository,
+                           VenueRepository venueRepository,
+                           BookingRepository bookingRepository){
+
+        this.userRepository=userRepository;
+        this.venueRepository=venueRepository;
+        this.bookingRepository=bookingRepository;
+    }
 
     @GetMapping("/dashboard")
     public ResponseEntity<Map<String, Long>> dashboard() {
@@ -43,26 +49,34 @@ public class AdminController {
     }
 
 
+    @PutMapping("/users/{id}/make-owner")
+    public ResponseEntity<?> makeOwner(@PathVariable Long id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setRole(Role.OWNER);
+        userRepository.save(user);
+
+        return ResponseEntity.ok("User promoted to owner successfully");
+    }
+
+    @PutMapping("/users/{id}/make-user") public ResponseEntity<?> makeUser( @PathVariable Long id) {
+        User user = userRepository .findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setRole(Role.USER);
+        userRepository.save(user);
+        return ResponseEntity.ok( "Owner role changed to USER successfully" );
+    }
+
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    @DeleteMapping("users/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        userRepository.deleteById(id);
-        return "User deleted successfully";
-    }
-
     @GetMapping("/venues")
     public List<Venue> getVenue() {
         return venueRepository.findAll();
-    }
-
-    @DeleteMapping("venues/{id}")
-    public String deleteVenue(@PathVariable Long id) {
-        venueRepository.deleteById(id);
-        return "venue deleted successfully";
     }
 
     @GetMapping("/bookings")
@@ -71,10 +85,38 @@ public class AdminController {
 
     }
 
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        userRepository.delete(user);
+
+        return ResponseEntity.ok("User deleted successfully");
+    }
+
+
+
+    @DeleteMapping("/venues/{id}")
+    public ResponseEntity<String> deleteVenue(@PathVariable Long id) {
+       Venue venue=venueRepository.findById(id)
+               .orElseThrow(()-> new RuntimeException("Venue not found"));
+
+       venueRepository.delete(venue);
+
+       return ResponseEntity.ok("Venue deleted successfully");
+    }
+
+
+
     @DeleteMapping("/bookings/{id}")
-    public String deleteBooking(@PathVariable Long id) {
-        bookingRepository.deleteById(id);
-        return "Booking deleted successfully";
+    public ResponseEntity<String> deleteBooking(@PathVariable Long id) {
+        Booking booking=bookingRepository.findById(id)
+                .orElseThrow(()->new RuntimeException("Booking Not Fonud"));
+
+        return ResponseEntity.ok("Booking deleted successfully");
     }
 
 }

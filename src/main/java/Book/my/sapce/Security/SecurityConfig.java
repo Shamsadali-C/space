@@ -1,5 +1,7 @@
 package Book.my.sapce.Security;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,14 +11,16 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import tools.jackson.databind.util.ClassUtil;
 
 @Configuration
 @EnableWebSecurity
-
 public class SecurityConfig {
 
 //    @Autowired
@@ -31,25 +35,30 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthFilter jwtAuthFilter) throws Exception {
        http.csrf(csrf -> csrf.disable())
                .authorizeHttpRequests(auth -> auth
-                       .requestMatchers("/auth").permitAll()
+                       .requestMatchers(
+                               "/auth/**",
+                               "/swagger-ui/**",
+                               "/v3/api-docs/**",
+                               "/swagger-ui.html")
+                       .permitAll()
                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                        .requestMatchers("/user/**").hasAnyAuthority("USER","ADMIN")
                        .requestMatchers("/venue/**").hasAnyAuthority("OWNER","ADMIN")
                        .requestMatchers("/booking/**").hasAnyAuthority("USER","OWNER","ADMIN")
                        .anyRequest().authenticated()
                )
-//               .sessionManagement(session->
-//               session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-               .formLogin(Customizer.withDefaults())
+               .sessionManagement(session->
+               session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+               .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+//               .formLogin(Customizer.withDefaults());
 //               .logout(log ->log
 //                       .logoutUrl("/logout")
 //                       .logoutSuccessUrl("/login?logout")
 //                       .permitAll())
-               .httpBasic(Customizer.withDefaults());
+//               .httpBasic(Customizer.withDefaults());
 
 
        return http.build();
@@ -79,5 +88,8 @@ public class SecurityConfig {
 //       return new InMemoryUserDetailsManager(user,admin);
 //    }
 
+//    @Bean
+//    @ConditionalOnProperty( name= "swagger.enabled",havingValue ="true")
+//    @ConditionalOnProperties()
 
 }

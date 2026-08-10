@@ -1,14 +1,13 @@
 package Book.my.sapce.Controller;
 
-import Book.my.sapce.DTO.BookingDetailsDTO;
 import Book.my.sapce.Model.User;
 import Book.my.sapce.Repository.BookingRepository;
+import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -18,6 +17,13 @@ public class UserController {
     private UserService userService;
     @Autowired
     private BookingRepository bookingRepository;
+
+    private final UserRepository userRepository;
+
+    public UserController(UserRepository userRepository){
+        this.userRepository=userRepository;
+    }
+
 
 
 //    @PostMapping("/register")
@@ -43,6 +49,14 @@ public class UserController {
         userService.deleteUser(id);
         return "User deleted successfully";
     }
+
+    @PutMapping("/{id}")
+    public User updateuser(@PathVariable Long id,@RequestBody User user){
+        user.setId(id);
+        return userService.updateuser(id, user);
+
+    }
+
 //    @GetMapping("/{bookingId}")
 //    public ResponseEntity<BookingDetailsDTO> getBookingDetails(
 //            @PathVariable Long bookingId) {
@@ -56,9 +70,28 @@ public class UserController {
 //        return userService.getAllUsers();
 //    }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id)
-    {
-        return userService.getUserById(id);
+//    @GetMapping("/{id}")
+//    public ResponseEntity<User> getUserById(@PathVariable Long id)
+//    {
+//        return userService.getUserById(id);
+//    }
+
+    @GetMapping("/Profile")
+    public ResponseEntity<?> getprofile(Authentication authentication){
+        String username= authentication.getName();
+        User user=userRepository.findByUsername(username)
+                .orElseThrow(()-> new RuntimeException());
+
+        return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/owner-request")
+    public ResponseEntity<?> requestownerRole(Authentication authentication){
+        String username= authentication.getName();
+
+        User user=userRepository.findByUsername(username)
+                .orElseThrow(()-> new RuntimeException("User not found"));
+
+        return ResponseEntity.ok("Owner request sented successfully");
     }
 }

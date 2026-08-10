@@ -77,9 +77,11 @@ public class VenueImagesService {
         venueImagesRepository.saveAll(venueImagesList);
 
     }
-    public List<VenueImages>  getImagesByVenue(Long id) {
+    public List<VenueImages>  getImagesByVenue(Long Venueid) {
 
-        return venueImagesRepository.findByVenueId(id);
+         venueRepository.findById(Venueid)
+                 .orElseThrow(()->new RuntimeException("Venue not found with id"+Venueid));
+         return venueImagesRepository.findByVenueId(Venueid);
     }
 
     public List<VenueImages> getAllImages() {
