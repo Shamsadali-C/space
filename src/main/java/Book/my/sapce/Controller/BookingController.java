@@ -19,19 +19,19 @@ public class BookingController {
     @Autowired
     public BookingService bookingService;
 
-    @PostMapping("/{userId}/{venueId}")
-    public Booking CreateBooking(@PathVariable Long userId, @PathVariable Long venueId) {
-        try {
-            return bookingService.CreateBooking(userId, venueId);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-    @PreAuthorize("hasRole('OWNER')")
-    @PutMapping("/Approve/{bookingId}")
-    public ResponseEntity<?> approve(@PathVariable Long bookingId){
-        return ResponseEntity.ok(bookingService.approve(bookingId));
-    }
+//    @PostMapping("/{userId}/{venueId}")
+//    public Booking CreateBooking(@PathVariable Long userId, @PathVariable Long venueId) {
+//        try {
+//            return bookingService.CreateBooking(userId, venueId,req);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e.getMessage());
+//        }
+//    }
+//    @PreAuthorize("hasRole('OWNER')")
+//    @PutMapping("/Approve/{bookingId}")
+//    public ResponseEntity<?> approve(@PathVariable Long bookingId){
+//        return ResponseEntity.ok(bookingService.approve(bookingId));
+//    }
 
 //    @PreAuthorize("hasRole('OWNER')")
 //    @PutMapping("/cancel/{bookingId}")
