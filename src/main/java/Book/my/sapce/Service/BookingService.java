@@ -10,6 +10,7 @@ import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,11 +28,12 @@ public class BookingService {
     public UserRepository userRepository;
 
 
-    public Booking CreateBooking (Long UserId ,Long VenueId) {
+    public Booking CreateBooking (@PathVariable Long UserId ,
+                                  @PathVariable Long VenueId) {
 
-     User user = userRepository.findById(UserId)
+       User user = userRepository.findById(UserId)
              .orElseThrow(()->new RuntimeException("User Does not exist"));
-     Venue venue = venueRepository.findById(VenueId)
+       Venue venue = venueRepository.findById(VenueId)
              .orElseThrow(() ->new RuntimeException("Venue doesn't Exist"));
 
      Booking booking = new Booking();
@@ -43,7 +45,7 @@ public class BookingService {
      booking.setTime(LocalTime.now());
 
      return bookingRepository.save(booking);
- }
+    }
     public List<Booking> getAllBooking() {
         return bookingRepository.findAll();
     }
@@ -83,14 +85,14 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
-    public Booking cancel(Long bookingId) {
-        Booking booking=bookingRepository.findById(bookingId)
-                .orElseThrow(()->new RuntimeException("Booking not found"));
-
-        booking.setBookingStatus(BookingStatus.CANCELLED.name());
-
-        return bookingRepository.save(booking);
-    }
+//    public Booking cancel(Long bookingId) {
+//        Booking booking=bookingRepository.findById(bookingId)
+//                .orElseThrow(()->new RuntimeException("Booking not found"));
+//
+//        booking.setBookingStatus(BookingStatus.CANCELLED.name());
+//
+//        return bookingRepository.save(booking);
+//    }
 
     public Booking reject(Long bookingId) {
         Booking booking=bookingRepository.findById(bookingId)

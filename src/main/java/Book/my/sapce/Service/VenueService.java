@@ -28,7 +28,6 @@ public class VenueService {
 //        User user = userRepository.findById(Integer.toUnsignedLong(1)).orElseThrow(()->new RuntimeException("NO User"));
         Venue venue = Venue.builder()  //object creation
                 .venueName(venueRequest.getVenueName())
-//                .availableStatus(true)
                 .capacity(venueRequest.getCapacity())
                 .location(venueRequest.getLocation())
                 .price(venueRequest.getPrice())

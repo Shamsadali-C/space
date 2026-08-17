@@ -18,20 +18,20 @@ public class VenueController {
     @Autowired
     private VenueService venueService;
 
-    
+    @PreAuthorize("hasRole('OWNER')")
     @PostMapping("/add")
     public Venue addVenue(@Valid @RequestBody VenueRequestDTO venueRequest) {
         return venueService.addVenue(venueRequest);
     }
     @PreAuthorize("hasRole('OWNER')")
     @PutMapping("/maintanence/{venueId}")
-    public ResponseEntity<?> maintanence(@RequestParam Long venueId){
+    public ResponseEntity<?> maintanence(@PathVariable Long venueId){
         return ResponseEntity.ok(venueService.maintanence(venueId));
     }
 
     @PreAuthorize("hasRole('OWNER')")
     @PutMapping("/holiday/{venueId}")
-    public ResponseEntity<?> holiday(@RequestParam Long venueId){
+    public ResponseEntity<?> holiday(@PathVariable Long venueId){
         return ResponseEntity.ok(venueService.holiday(venueId));
     }
 
@@ -51,6 +51,7 @@ public class VenueController {
     public ResponseEntity<Venue> getVenueById(@PathVariable Long id) {
         return venueService.getVenueById(id);
     }
+
 
     @DeleteMapping("/{id}")
     public String deleteVenue(@PathVariable Long id) {

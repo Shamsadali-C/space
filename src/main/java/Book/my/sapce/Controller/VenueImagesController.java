@@ -5,16 +5,11 @@ import Book.my.sapce.Model.VenueImages;
 import Book.my.sapce.Service.VenueImagesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.print.attribute.standard.Destination;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 
@@ -23,33 +18,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VenueImagesController {
 
-     @Autowired
-     public VenueImagesService venueImagesService;
+
+     public  final  VenueImagesService venueImagesService;
 
 
 
-    @PostMapping(value = "/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadfile(@Valid @ModelAttribute VenueImagesDTO dto,
-                                             @RequestParam("files") List<MultipartFile> file) {
+    @PostMapping(value = "/{venueId}/images",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<String> uploadFile(
+            @PathVariable Long venueId,
+            @RequestParam("files") List<MultipartFile> files) {
 
-        venueImagesService.uploadfile(dto, file);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Image Uploaded Succesfully");
+        venueImagesService.uploadfile(venueId, files);
 
-
-
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Images uploaded successfully");
     }
 
-    @GetMapping("/{venueId}")
-    public ResponseEntity<List<VenueImages>> getImagesByVenue(@PathVariable Long VenueId) {
-        return ResponseEntity.ok(venueImagesService.getImagesByVenue(VenueId));
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<List<VenueImages>> getImagesByVenue(@PathVariable Long id) {
+//        return ResponseEntity.ok(venueImagesService.getImagesByVenue(id));
+//    }
 
 
     @DeleteMapping("/{id}")
-    public String deleteImage(@PathVariable Long VenueId){
-        venueImagesService.deleteVenueId(VenueId);
-                return("Image Deleted Successfully");
+    public ResponseEntity<String> deleteImage(@PathVariable Long id) {
+
+        venueImagesService.deleteVenueImage(id);
+
+        return ResponseEntity.ok("Image deleted successfully");
     }
 
 //    @GetMapping

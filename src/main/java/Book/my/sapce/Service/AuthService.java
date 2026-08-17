@@ -51,8 +51,7 @@ public class AuthService {
         User user = userRepository
                 .findByUsername(dto.getUsername())
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
-
+                        new RuntimeException("Invalid Username"));
 
         if (!passwordEncoder.matches(
                 dto.getPassword(),
@@ -60,8 +59,7 @@ public class AuthService {
 
             throw new RuntimeException("Invalid password");
         }
-
-        return jwtService.generateToken(user.getUsername());
+        return jwtService.generateToken(user);
     }
 }
 

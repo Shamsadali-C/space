@@ -1,6 +1,7 @@
 package Book.my.sapce.Security;
 
 import Book.my.sapce.Service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,13 +26,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.userDetailsService =userDetailsService;
     }
 
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
+
+        // Don't check JWT for login/register
+        if (request.getServletPath().equals("/auth/login")
+                || request.getServletPath().equals("/auth/register")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -39,19 +48,34 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);//Bearer string remove cheyyan
+        String token = authHeader.substring(7);
 
-        String username = jwtService.extractUsername(token);// excact usename find cheyyan
+        try {
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);//db -n userne load cheyyan
+            String username = jwtService.extractUsername(token);
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(//
-                userDetails, null, userDetails
-                .getAuthorities()
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);//spring securityode this user authentcated tell cheyyan
-        filterChain.doFilter(request,response);  //continue to controller
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(username);
 
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
+            }
+
+            filterChain.doFilter(request, response);
+
+        } catch (ExpiredJwtException e) {
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
     }
 }

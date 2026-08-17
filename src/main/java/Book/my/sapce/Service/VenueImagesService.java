@@ -20,24 +20,23 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VenueImagesService {
 
-    @Autowired
+
     public final VenueImagesRepository venueImagesRepository;
-    @Autowired
     public final VenueRepository venueRepository;
 
     public static final String FILE_UPLOAD_DIR = "C:\\Users\\Shamsadali\\OneDrive\\intership\\upload\\";
 
 
-    public void uploadfile(VenueImagesDTO dto, List<MultipartFile> file) {
+    public void uploadfile(Long venueId, List<MultipartFile> file) {
 
-        Venue venue = venueRepository.findById(dto.getVenueId())
-                .orElseThrow(() -> new RuntimeException("Venue not found!"));
+        Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() -> new RuntimeException("Venue not found!"+venueId));
 
 
-        Long imageCount = venueImagesRepository.countByVenueId(dto.getVenueId());
+        Long imageCount = venueImagesRepository.countByVenueId(venueId);
         if (imageCount + file.size() > 3) {
             throw new RuntimeException("Maximum 3 images allowed per venue!. ");
-        }   // limit set cheythath 3
+        }                                                                          // limit set cheythath 3
 
         File dir = new File(FILE_UPLOAD_DIR);
         if (!dir.exists()) {
@@ -49,9 +48,24 @@ public class VenueImagesService {
             if (image.isEmpty()) {
                 continue;
             }
+
+            String contentType = image.getContentType();
+
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new RuntimeException("Only image files are allowed");
+            }
+
             String originalName = image.getOriginalFilename();
-            int index = originalName.lastIndexOf(".");
-            String extension = originalName.substring(index);
+//            int index = originalName.lastIndexOf(".");
+//            String extension = originalName.substring(-1);
+
+            if (originalName == null || !originalName.contains(".")) {
+                throw new RuntimeException("Invalid image file");
+            }
+
+            String extension = originalName.substring(
+                    originalName.lastIndexOf(".")
+            );
 
             String imageName =
                     UUID.randomUUID()+ extension;
@@ -89,6 +103,18 @@ public class VenueImagesService {
     }
 
 
-    public void deleteVenueId(Long id) {venueImagesRepository.deleteById(id);
+    public void deleteVenueImage(Long id) {
+        VenueImages venueImage = venueImagesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Image not found with id: " + id));
+
+        File file = new File(FILE_UPLOAD_DIR, venueImage.getImageUrl());
+
+        if (file.exists()) {
+            boolean deleted=file.delete();
+
+            System.out.println("File deleted:" + deleted);
+        }
+
+        venueImagesRepository.delete(venueImage);
     }
 }

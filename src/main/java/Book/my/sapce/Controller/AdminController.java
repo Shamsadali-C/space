@@ -1,10 +1,13 @@
 package Book.my.sapce.Controller;
 
+import Book.my.sapce.DTO.OwnerRequestResponseDTO;
 import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.BookingRepository;
+import Book.my.sapce.Repository.OwnerRequestRepository;
 import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,16 +20,19 @@ public class AdminController {
 
 
     private final UserRepository userRepository;
-    private VenueRepository venueRepository;
-    private BookingRepository bookingRepository;
+    private final VenueRepository venueRepository;
+    private final BookingRepository bookingRepository;
+    private final OwnerRequestRepository ownerRequestRepository;
 
     public AdminController(UserRepository userRepository,
                            VenueRepository venueRepository,
-                           BookingRepository bookingRepository){
+                           BookingRepository bookingRepository,
+                           OwnerRequestRepository ownerRequestRepository){
 
         this.userRepository=userRepository;
         this.venueRepository=venueRepository;
         this.bookingRepository=bookingRepository;
+        this.ownerRequestRepository=ownerRequestRepository;
     }
 
     @GetMapping("/dashboard")
@@ -49,6 +55,58 @@ public class AdminController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/owner-requests/{id}/approve")
+    public ResponseEntity<?> approveOwnerRequest(
+            @PathVariable Long id
+    ) {
+
+        OwnerRequest request = ownerRequestRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Owner request not found"));
+
+        if (request.getStatus() != OwnerRequestStatus.PENDING) {
+            return ResponseEntity.badRequest()
+                    .body("Request has already been processed");
+        }
+
+        User user = request.getUser();
+
+        user.setRole(Role.OWNER);
+        userRepository.save(user);
+
+        request.setStatus(OwnerRequestStatus.APPROVED);
+        ownerRequestRepository.save(request);
+
+        return ResponseEntity.ok(
+                "Owner request approved successfully"
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/owner-requests/{id}/reject")
+    public ResponseEntity<?> rejectOwnerRequest(
+            @PathVariable Long id
+    ) {
+
+        OwnerRequest request = ownerRequestRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Owner request not found"));
+
+        if (request.getStatus() != OwnerRequestStatus.PENDING) {
+            return ResponseEntity.badRequest()
+                    .body("Request has already been processed");
+        }
+
+        request.setStatus(OwnerRequestStatus.REJECTED);
+        ownerRequestRepository.save(request);
+
+        return ResponseEntity.ok(
+                "Owner request rejected successfully"
+        );
+    }
+
+
     @PutMapping("/users/{id}/make-owner")
     public ResponseEntity<?> makeOwner(@PathVariable Long id) {
 
@@ -67,6 +125,29 @@ public class AdminController {
         user.setRole(Role.USER);
         userRepository.save(user);
         return ResponseEntity.ok( "Owner role changed to USER successfully" );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/owner-requests")
+    public ResponseEntity<?> getOwnerRequests() {
+
+        List<OwnerRequest> requests =
+                ownerRequestRepository.findAll();
+
+        List<OwnerRequestResponseDTO> response =
+                requests.stream()
+                        .map(request -> new OwnerRequestResponseDTO(
+                                request.getId(),
+                                request.getUser().getId(),
+                                request.getUser().getUsername(),
+                                request.getVenueName(),
+                                request.getAddress(),
+                                request.getPhone(),
+                                request.getStatus()
+                        ))
+                        .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users")
@@ -113,10 +194,16 @@ public class AdminController {
 
     @DeleteMapping("/bookings/{id}")
     public ResponseEntity<String> deleteBooking(@PathVariable Long id) {
-        Booking booking=bookingRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Booking Not Fonud"));
 
-        return ResponseEntity.ok("Booking deleted successfully");
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Booking Not Found"));
+
+        bookingRepository.delete(booking);
+
+        return ResponseEntity.ok(
+                "Booking deleted successfully"
+        );
     }
 
 }

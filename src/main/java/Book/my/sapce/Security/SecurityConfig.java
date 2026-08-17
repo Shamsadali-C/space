@@ -17,7 +17,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import tools.jackson.databind.util.ClassUtil;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -36,18 +41,20 @@ public class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthFilter jwtAuthFilter) throws Exception {
-       http.csrf(csrf -> csrf.disable())
+       http
+               .cors(Customizer.withDefaults())
+               .csrf(csrf -> csrf.disable())
                .authorizeHttpRequests(auth -> auth
                        .requestMatchers(
-                               "/auth/**",
+                               "/","/auth/**",
                                "/swagger-ui/**",
                                "/v3/api-docs/**",
                                "/swagger-ui.html")
                        .permitAll()
                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                        .requestMatchers("/user/**").hasAnyAuthority("USER","ADMIN")
-                       .requestMatchers("/venue/**").hasAnyAuthority("OWNER","ADMIN")
-                       .requestMatchers("/booking/**").hasAnyAuthority("USER","OWNER","ADMIN")
+                       .requestMatchers("/venue/**").hasAnyAuthority("OWNER","USER")
+                       .requestMatchers("/booking/**").hasAnyAuthority("USER","OWNER")
                        .anyRequest().authenticated()
                )
                .sessionManagement(session->
@@ -92,4 +99,40 @@ public class SecurityConfig {
 //    @ConditionalOnProperty( name= "swagger.enabled",havingValue ="true")
 //    @ConditionalOnProperties()
 
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(
+                List.of("http://localhost:5173")
+        );
+
+        configuration.setAllowedMethods(
+                List.of(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                )
+        );
+
+        configuration.setAllowedHeaders(
+                List.of("*")
+        );
+
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration(
+                "/**",
+                configuration
+        );
+
+        return source;
+    }
 }
