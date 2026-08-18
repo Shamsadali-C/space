@@ -39,42 +39,91 @@ public class SecurityConfig {
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
         return config.getAuthenticationManager();
     }
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthFilter jwtAuthFilter) throws Exception {
-       http
-               .cors(Customizer.withDefaults())
-               .csrf(csrf -> csrf.disable())
-               .authorizeHttpRequests(auth -> auth
-                       .requestMatchers(
-                               "/","/auth/**",
-                               "/swagger-ui/**",
-                               "/v3/api-docs/**",
-                               "/swagger-ui.html")
-                       .permitAll()
-                       .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                       .requestMatchers("/user/**").hasAnyAuthority("USER","ADMIN")
-                       .requestMatchers("/venue/**").hasAnyAuthority("OWNER","USER")
-                       .requestMatchers("/booking/**").hasAnyAuthority("USER","OWNER")
-                       .anyRequest().authenticated()
-               )
-               .sessionManagement(session->
-               session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//               .formLogin(Customizer.withDefaults());
-//               .logout(log ->log
-//                       .logoutUrl("/logout")
-//                       .logoutSuccessUrl("/login?logout")
-//                       .permitAll())
-//               .httpBasic(Customizer.withDefaults());
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthFilter jwtAuthFilter) throws Exception {
+//       http
+//               .cors(Customizer.withDefaults())
+//               .csrf(csrf -> csrf.disable())
+//               .authorizeHttpRequests(auth -> auth
+//                       .requestMatchers(
+//                               "/","/auth/**",
+//                               "/swagger-ui/**",
+//                               "/v3/api-docs/**",
+//                               "/swagger-ui.html")
+//                       .permitAll()
+//                       .requestMatchers("/admin/**").hasRole("ADMIN")
+//                       .requestMatchers("/user/**").hasRole("USER")
+//                       .requestMatchers("/owner/**").hasRole("OWNER")
+//                       .anyRequest().authenticated()
+//               )
+//               .sessionManagement(session->
+//               session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//               .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+////               .formLogin(Customizer.withDefaults());
+////               .logout(log ->log
+////                .logoutUrl("/logout")
+////                .logoutSuccessUrl("/login?logout")
+////                .permitAll())
+////               .httpBasic(Customizer.withDefaults());
+//
+//
+//       return http.build();
+//
+//
+//
+//
+//   }
 
 
-       return http.build();
+@Bean
+public SecurityFilterChain securityFilterChain(
+        HttpSecurity http,
+        JwtAuthFilter jwtAuthFilter) throws Exception {
 
+    http
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
 
+            .authorizeHttpRequests(auth -> auth
 
+                    // Public
+                    .requestMatchers(
+                            "/",
+                            "/auth/**",
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**",
+                            "/swagger-ui.html"
+                    ).permitAll()
 
-   }
+                    // Admin
+                    .requestMatchers("/admin/**")
+                    .hasRole("ADMIN")
 
+                    // User
+                    .requestMatchers("/user/**")
+                    .hasRole("USER")
+
+                    // Owner
+                    .requestMatchers("/owner/**")
+                    .hasRole("OWNER")
+
+                    .anyRequest()
+                    .authenticated()
+            )
+
+            .sessionManagement(session ->
+                    session.sessionCreationPolicy(
+                            SessionCreationPolicy.STATELESS
+                    )
+            )
+
+            .addFilterBefore(
+                    jwtAuthFilter,
+                    UsernamePasswordAuthenticationFilter.class
+            );
+
+    return http.build();
+}
 
    @Bean
    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService){

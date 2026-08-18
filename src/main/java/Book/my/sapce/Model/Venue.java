@@ -35,7 +35,7 @@ public class Venue {
 
 
     @ManyToOne
-    @JoinColumn(name = "owner_id",nullable = false)
+    @JoinColumn(name = "owner_id")
     private User owner;
 
 
@@ -45,13 +45,6 @@ public class Venue {
     @Column(nullable = false)
     private VenueStatus status=VenueStatus.AVAILABLE;
 
-//    public boolean isAvailableStatus() {
-//        return availableStatus;
-//    }
-//
-//    public void setAvailableStatus(boolean availableStatus) {
-//        this.availableStatus = availableStatus;
-//    }
 
 
     }

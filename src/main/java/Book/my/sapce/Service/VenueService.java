@@ -1,14 +1,14 @@
 package Book.my.sapce.Service;
 
 import Book.my.sapce.DTO.VenueRequestDTO;
-import Book.my.sapce.Model.Booking;
-import Book.my.sapce.Model.BookingStatus;
-import Book.my.sapce.Model.Venue;
-import Book.my.sapce.Model.VenueStatus;
+import Book.my.sapce.Model.*;
+import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,22 +17,43 @@ import java.util.Optional;
 @Service
 public class VenueService {
 
-    @Autowired
-    public VenueRepository venueRepository;
+    private final VenueRepository venueRepository;
+    private final UserRepository userRepository;
 
-//    @Autowired
-//    public UserRepository userRepository; // call-only object creating time, here I create with .builder()
+    public VenueService(
+            VenueRepository venueRepository,
+            UserRepository userRepository) {
 
+        this.venueRepository = venueRepository;
+        this.userRepository = userRepository;
+    }
 
     public Venue addVenue(VenueRequestDTO venueRequest) {
-//        User user = userRepository.findById(Integer.toUnsignedLong(1)).orElseThrow(()->new RuntimeException("NO User"));
-        Venue venue = Venue.builder()  //object creation
-                .venueName(venueRequest.getVenueName())
-                .capacity(venueRequest.getCapacity())
-                .location(venueRequest.getLocation())
-                .price(venueRequest.getPrice())
-                .owner(venueRequest.getOwner())
-                .build();
+
+
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        String username = authentication.getName();
+
+
+        User owner = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException("Owner not found")
+                );
+
+        Venue venue = new Venue();
+
+        venue.setVenueName(venueRequest.getVenueName());
+        venue.setLocation(venueRequest.getLocation());
+        venue.setCapacity(venueRequest.getCapacity());
+        venue.setPrice(venueRequest.getPrice());
+
+        venue.setOwner(owner);
+
+        venue.setStatus(VenueStatus.AVAILABLE);
 
         return venueRepository.save(venue);
     }
@@ -86,6 +107,16 @@ public class VenueService {
         return venueRepository.save(v);
     }
 
+    public List<Venue> getOwnerVenues(String username) {
+
+        User owner = userRepository
+                .findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException("Owner not found")
+                );
+
+        return venueRepository.findByOwner(owner);
+    }
 
 
 }

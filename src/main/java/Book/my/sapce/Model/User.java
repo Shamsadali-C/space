@@ -10,7 +10,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-//@Table(name="user")
 @Table(
         name = "user",
         uniqueConstraints = {

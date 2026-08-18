@@ -16,12 +16,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
-
 public class UserController {
 
 
@@ -59,12 +60,31 @@ public class UserController {
         return "User deleted successfully";
     }
 
-    @PutMapping("/{id}")
-    public User updateuser(@PathVariable Long id,@RequestBody User user){
-        user.setId(id);
-        return userService.updateuser(id, user);
+//    @PutMapping("/{id}")
+//    public User updateuser(@PathVariable Long id,@RequestBody User user){
+//        user.setId(id);
+//        return userService.updateuser(id, user);
+//
+//    }
+@PutMapping("/profile")
+public ResponseEntity<?> updateUser(
+        @RequestBody User userData,
+        Authentication authentication) {
 
-    }
+    String username = authentication.getName();
+
+    User user = userRepository.findByUsername(username)
+            .orElseThrow(() ->
+                    new RuntimeException("User not found"));
+
+    user.setUsername(userData.getUsername());
+    user.setEmail(userData.getEmail());
+
+    User updatedUser = userRepository.save(user);
+
+    return ResponseEntity.ok(updatedUser);
+}
+
     @GetMapping("/images/{id}")
     public ResponseEntity<List<VenueImages>> getImagesByVenue(@PathVariable Long id) {
         return ResponseEntity.ok(venueImagesService.getImagesByVenue(id));
@@ -123,33 +143,63 @@ public class UserController {
         return venueService.getAllVenue();
     }
 
-//    @PostMapping("/{userId}/{venueId}")
-//    public Booking CreateBooking(@PathVariable Long userId, @PathVariable Long venueId) {
-//        try {
-//            return bookingService.CreateBooking(userId, venueId);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e.getMessage());
-//        }
+
+     @PostMapping("/booking/{venueId}")
+     @PreAuthorize("hasRole('USER')")
+     public ResponseEntity<?> createBooking(
+        @PathVariable Long venueId,
+        @RequestParam LocalDate bookingDate,
+        @RequestParam LocalTime bookingTime,
+        Authentication authentication) {
+
+    String username = authentication.getName();
+
+    User user = userRepository.findByUsername(username)
+            .orElseThrow(() ->
+                    new RuntimeException("User not found"));
+
+    return ResponseEntity.ok(
+            bookingService.CreateBooking(
+                    user.getId(),
+                    venueId,
+                    bookingDate,
+                    bookingTime
+            )
+    );
+}
+
+//    @PostMapping("/booking/{venueId}")
+//    @PreAuthorize("hasRole('USER')")
+//    public ResponseEntity<?> createBooking(
+//            @PathVariable Long venueId,
+//            @RequestParam LocalDate bookingDate,
+//            @RequestParam LocalTime bookingTime,
+//            Authentication authentication) {
+//
+//        String username = authentication.getName();
+//
+//        User user = userRepository.findByUsername(username)
+//                .orElseThrow(() ->
+//                        new RuntimeException("User not found"));
+//
+//        System.out.println("=================================");
+//        System.out.println("USERNAME  : " + username);
+//        System.out.println("USER ID   : " + user.getId());
+//        System.out.println("VENUE ID  : " + venueId);
+//        System.out.println("DATE      : " + bookingDate);
+//        System.out.println("TIME      : " + bookingTime);
+//        System.out.println("=================================");
+//
+//        return ResponseEntity.ok(
+//                bookingService.CreateBooking(
+//                        user.getId(),
+//                        venueId,
+//                        bookingDate,
+//                        bookingTime
+//                )
+//        );
 //    }
-    @PostMapping("/booking/{venueId}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> createBooking(
-            @PathVariable Long venueId,
-            Authentication authentication) {
 
-        String username = authentication.getName();
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found"));
-
-        return ResponseEntity.ok(
-                bookingService.CreateBooking(
-                        user.getId(),
-                        venueId
-                )
-        );
-    }
     @PreAuthorize("hasRole('USER') or hasRole('OWNER')")
     @GetMapping("/owner-request/status")
     public ResponseEntity<?> getMyOwnerRequestStatus(
@@ -185,6 +235,22 @@ public class UserController {
                         ownerRequest.getPhone(),
                         ownerRequest.getStatus()
                 )
+        );
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/bookings")
+    public ResponseEntity<?> getMyBookings(
+            Authentication authentication) {
+
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        return ResponseEntity.ok(
+                bookingService.getUserBookings(user.getId())
         );
     }
 }

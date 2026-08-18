@@ -1,15 +1,13 @@
 package Book.my.sapce.Service;
 
 import Book.my.sapce.DTO.BookingDetailsDTO;
-import Book.my.sapce.Model.Booking;
-import Book.my.sapce.Model.BookingStatus;
-import Book.my.sapce.Model.User;
-import Book.my.sapce.Model.Venue;
+import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.BookingRepository;
 import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
@@ -27,35 +25,58 @@ public class BookingService {
     @Autowired
     public UserRepository userRepository;
 
+    @Transactional
+    public Booking CreateBooking(
+            Long userId,
+            Long venueId,
+            LocalDate bookingDate,
+            LocalTime bookingTime) {
 
-    public Booking CreateBooking (@PathVariable Long UserId ,
-                                  @PathVariable Long VenueId) {
+        Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() ->
+                        new RuntimeException("Venue doesn't exist"));
 
-       User user = userRepository.findById(UserId)
-             .orElseThrow(()->new RuntimeException("User Does not exist"));
-       Venue venue = venueRepository.findById(VenueId)
-             .orElseThrow(() ->new RuntimeException("Venue doesn't Exist"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new RuntimeException("User doesn't exist"));
 
-     Booking booking = new Booking();
+        boolean alreadyBooked =
+                bookingRepository.existsByVenue_IdAndDateAndTime(
+                        venueId,
+                        bookingDate,
+                        bookingTime
+                );
 
-     booking.setUser(user);
-     booking.setVenue(venue);
-     booking.setBookingStatus("PENDING");
-     booking.setDate(LocalDate.now());
-     booking.setTime(LocalTime.now());
+        if (alreadyBooked) {
+            throw new RuntimeException(
+                    "This time slot is already booked"
+            );
+        }
 
-     return bookingRepository.save(booking);
+        Booking booking = new Booking();
+
+        booking.setUser(user);
+        booking.setVenue(venue);
+        booking.setDate(bookingDate);
+        booking.setTime(bookingTime);
+        booking.setBookingStatus("PENDING");
+
+        return bookingRepository.save(booking);
     }
+
+
     public List<Booking> getAllBooking() {
         return bookingRepository.findAll();
     }
 
 
-    public Booking deleteBooking(Long id) {
-        Booking booking=bookingRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Booking not found"));
+    public void deleteBooking(Long id) {
 
-        return bookingRepository.save(booking);
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Booking not found"));
+
+        bookingRepository.delete(booking);
     }
 
     public BookingService(BookingRepository bookingRepository) {
@@ -94,13 +115,34 @@ public class BookingService {
 //        return bookingRepository.save(booking);
 //    }
 
+    @Transactional
     public Booking reject(Long bookingId) {
-        Booking booking=bookingRepository.findById(bookingId)
-                .orElseThrow(()->new RuntimeException("Booking not found"));
 
-        booking.setBookingStatus(BookingStatus.REJECTED.name());
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() ->
+                        new RuntimeException("Booking not found"));
+
+        booking.setBookingStatus(
+                BookingStatus.REJECTED.name()
+        );
+
+        Venue venue = booking.getVenue();
+
+        venue.setStatus(VenueStatus.AVAILABLE);
+
+        venueRepository.save(venue);
 
         return bookingRepository.save(booking);
+    }
+
+    public List<Booking> getOwnerBookings(String username) {
+
+        return bookingRepository.findByVenueOwnerUsername(username);
+    }
+
+    public List<Booking> getUserBookings(Long userId) {
+
+        return bookingRepository.findByUserId(userId);
     }
 
 

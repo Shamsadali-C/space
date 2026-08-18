@@ -9,26 +9,26 @@ import java.time.LocalTime;
 
 @Getter
 @Setter
-//@Table(name = "booking")
+@Entity
 @Table(
         uniqueConstraints = @UniqueConstraint(
         columnNames ={
-                "venueId",
-                "booking_time",
-                "booking_date"
+                "venue_Id",
+                "date",
+                "time"
         }
         ))
-@Entity
+
 public class Booking {
 
     @Id
     @GeneratedValue
     public Long id;
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="user_id",nullable = false)
     private User user;
     @ManyToOne
-    @JoinColumn(name="venue_id")
+    @JoinColumn(name="venue_id",nullable = false)
     private Venue venue;
 
     private String bookingStatus;
@@ -36,6 +36,7 @@ public class Booking {
     private LocalDate date;
 
     private LocalTime time;
+
 
 
 
