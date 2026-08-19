@@ -33,9 +33,12 @@ public class Booking {
 
     private String bookingStatus;
 
-    private LocalDate date;
-
-    private LocalTime time;
+//    private LocalDate date;
+//
+//    private LocalTime time;
+    @ManyToOne
+    @JoinColumn(name = "time_slot_id", nullable = false)
+    private TimeSlot timeSlot;
 
 
 

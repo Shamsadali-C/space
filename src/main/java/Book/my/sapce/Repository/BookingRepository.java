@@ -20,7 +20,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByVenueOwnerUsername(String username);
     List<Booking> findByUserId(Long userId);
 
-    boolean existsByVenue_IdAndDateAndTime(Long venueId,
-                                           LocalDate bookingDate,
-                                           LocalTime bookingTime);
+
 }

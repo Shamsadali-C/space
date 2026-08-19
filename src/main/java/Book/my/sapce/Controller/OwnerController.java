@@ -1,11 +1,13 @@
 package Book.my.sapce.Controller;
 
 import Book.my.sapce.DTO.BookingDetailsDTO;
+import Book.my.sapce.DTO.TimeSlotRequestDTO;
 import Book.my.sapce.DTO.VenueRequestDTO;
 import Book.my.sapce.Model.User;
 import Book.my.sapce.Model.Venue;
 import Book.my.sapce.Model.VenueImages;
 import Book.my.sapce.Service.BookingService;
+import Book.my.sapce.Service.TimeSlotService;
 import Book.my.sapce.Service.VenueImagesService;
 import Book.my.sapce.Service.VenueService;
 import jakarta.validation.Valid;
@@ -27,13 +29,16 @@ public class OwnerController {
     private final VenueService venueService;
     private final VenueImagesService venueImagesService;
     private final BookingService bookingService;
+    private final TimeSlotService timeSlotService;
     public OwnerController(VenueService venueService,
                            VenueImagesService venueImagesService,
-                           BookingService bookingService){
+                           BookingService bookingService,
+                           TimeSlotService timeSlotService){
 
         this.venueService=venueService;
         this.venueImagesService=venueImagesService;
         this.bookingService=bookingService;
+        this.timeSlotService=timeSlotService;
     }
 
     @PreAuthorize("hasRole('OWNER')")
@@ -165,6 +170,23 @@ public class OwnerController {
         return "venue deleted successfully";
     }
 
+    @PreAuthorize("hasRole('OWNER')")
+    @PostMapping("/venue/{venueId}/slots")
+    public ResponseEntity<?> createSlot(
+            @PathVariable Long venueId,
+            @RequestBody TimeSlotRequestDTO request,
+            Authentication authentication) {
+
+        String username = authentication.getName();
+
+        return ResponseEntity.ok(
+                timeSlotService.createSlot(
+                        venueId,
+                        request,
+                        username
+                )
+        );
+    }
 
 
 

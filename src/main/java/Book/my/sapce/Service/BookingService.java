@@ -3,6 +3,7 @@ package Book.my.sapce.Service;
 import Book.my.sapce.DTO.BookingDetailsDTO;
 import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.BookingRepository;
+import Book.my.sapce.Repository.TimeSlotRepository;
 import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,52 +19,52 @@ import java.util.List;
 public class BookingService {
 
 
-    @Autowired
-    public BookingRepository bookingRepository;
-    @Autowired
-    public VenueRepository venueRepository;
-    @Autowired
-    public UserRepository userRepository;
+
+    private final BookingRepository bookingRepository;
+    private final VenueRepository venueRepository;
+    private final UserRepository userRepository;
+    private final TimeSlotRepository timeSlotRepository;
+
 
     @Transactional
-    public Booking CreateBooking(
+    public Booking createBooking(
             Long userId,
-            Long venueId,
-            LocalDate bookingDate,
-            LocalTime bookingTime) {
+            Long slotId) {
 
-        Venue venue = venueRepository.findById(venueId)
+        TimeSlot slot = timeSlotRepository
+                .findById(slotId)
                 .orElseThrow(() ->
-                        new RuntimeException("Venue doesn't exist"));
+                        new RuntimeException(
+                                "Time slot not found"
+                        ));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new RuntimeException("User doesn't exist"));
+        if (slot.getStatus() != TimeSlotStatus.AVAILABLE) {
 
-        boolean alreadyBooked =
-                bookingRepository.existsByVenue_IdAndDateAndTime(
-                        venueId,
-                        bookingDate,
-                        bookingTime
-                );
-
-        if (alreadyBooked) {
             throw new RuntimeException(
-                    "This time slot is already booked"
+                    "This time slot is not available"
             );
         }
+
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found"
+                        ));
 
         Booking booking = new Booking();
 
         booking.setUser(user);
-        booking.setVenue(venue);
-        booking.setDate(bookingDate);
-        booking.setTime(bookingTime);
+        booking.setVenue(slot.getVenue());
+        booking.setTimeSlot(slot);
         booking.setBookingStatus("PENDING");
+
+        slot.setStatus(TimeSlotStatus.PENDING);
+
+        timeSlotRepository.save(slot);
 
         return bookingRepository.save(booking);
     }
-
 
     public List<Booking> getAllBooking() {
         return bookingRepository.findAll();
@@ -79,8 +80,15 @@ public class BookingService {
         bookingRepository.delete(booking);
     }
 
-    public BookingService(BookingRepository bookingRepository) {
+    public BookingService(BookingRepository bookingRepository,
+                          VenueRepository venueRepository,
+                          UserRepository userRepository,
+                          TimeSlotRepository timeSlotRepository) {
+
         this.bookingRepository = bookingRepository;
+        this.venueRepository = venueRepository;
+        this.userRepository = userRepository;
+        this.timeSlotRepository = timeSlotRepository;
     }
 
     public BookingDetailsDTO getBookingDetails(Long bookingId, User user) {
@@ -90,18 +98,28 @@ public class BookingService {
 
         BookingDetailsDTO dto = new BookingDetailsDTO();
         dto.setBookingId(booking.getId());
-        dto.setTime(booking.getTime());
-        dto.setDate(booking.getDate());
+//        dto.setTime(booking.getTime());
+//        dto.setDate(booking.getDate());
         dto.setBookingStatus(booking.getBookingStatus());
 
         return dto;
     }
 
+    @Transactional
     public Booking approve(Long bookingId) {
-        Booking booking=bookingRepository.findById(bookingId)
-                .orElseThrow(()->new RuntimeException("Booking not found"));
 
-      booking.setBookingStatus(BookingStatus.ACCEPTED.name());
+        Booking booking = bookingRepository
+                .findById(bookingId)
+                .orElseThrow(() ->new RuntimeException(
+                                "Booking not found"));
+
+        booking.setBookingStatus(BookingStatus.ACCEPTED.name());
+
+        TimeSlot slot = booking.getTimeSlot();
+
+        slot.setStatus(TimeSlotStatus.BOOKED);
+
+        timeSlotRepository.save(slot);
 
         return bookingRepository.save(booking);
     }
@@ -118,19 +136,17 @@ public class BookingService {
     @Transactional
     public Booking reject(Long bookingId) {
 
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() ->
-                        new RuntimeException("Booking not found"));
+        Booking booking = bookingRepository
+                .findById(bookingId)
+                .orElseThrow(() -> new RuntimeException( "Booking not found"));
 
-        booking.setBookingStatus(
-                BookingStatus.REJECTED.name()
-        );
+        booking.setBookingStatus(BookingStatus.REJECTED.name() );
 
-        Venue venue = booking.getVenue();
+        TimeSlot slot = booking.getTimeSlot();
 
-        venue.setStatus(VenueStatus.AVAILABLE);
+        slot.setStatus(TimeSlotStatus.AVAILABLE);
 
-        venueRepository.save(venue);
+        timeSlotRepository.save(slot);
 
         return bookingRepository.save(booking);
     }

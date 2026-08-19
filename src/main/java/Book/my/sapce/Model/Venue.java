@@ -1,11 +1,12 @@
 package Book.my.sapce.Model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.awt.image.BufferedImage;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,8 +36,12 @@ public class Venue {
 
 
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id",nullable = false)
     private User owner;
+
+    @OneToMany(mappedBy = "venue")
+    @JsonManagedReference
+    private List<TimeSlot> timeSlots;
 
 
 

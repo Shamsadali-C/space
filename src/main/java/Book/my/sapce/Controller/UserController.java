@@ -6,10 +6,7 @@ import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.BookingRepository;
 import Book.my.sapce.Repository.OwnerRequestRepository;
 import Book.my.sapce.Repository.UserRepository;
-import Book.my.sapce.Service.BookingService;
-import Book.my.sapce.Service.UserService;
-import Book.my.sapce.Service.VenueImagesService;
-import Book.my.sapce.Service.VenueService;
+import Book.my.sapce.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +30,7 @@ public class UserController {
     private final BookingService bookingService;
     private final VenueImagesService venueImagesService;
     private final OwnerRequestRepository ownerRequestRepository;
+    private final TimeSlotService timeSlotService;
 
     public UserController(UserService userService,
                           BookingRepository bookingRepository,
@@ -40,7 +38,8 @@ public class UserController {
                           VenueService venueService,
                           BookingService bookingService,
                           VenueImagesService venueImagesService,
-                          OwnerRequestRepository ownerRequestRepository){
+                          OwnerRequestRepository ownerRequestRepository,
+                          TimeSlotService timeSlotService){
 
         this.userService=userService;
         this.bookingRepository=bookingRepository;
@@ -49,6 +48,7 @@ public class UserController {
         this.bookingService=bookingService;
         this.venueImagesService=venueImagesService;
         this.ownerRequestRepository=ownerRequestRepository;
+        this.timeSlotService=timeSlotService;
     }
 
 
@@ -66,8 +66,9 @@ public class UserController {
 //        return userService.updateuser(id, user);
 //
 //    }
-@PutMapping("/profile")
-public ResponseEntity<?> updateUser(
+//
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateUser(
         @RequestBody User userData,
         Authentication authentication) {
 
@@ -144,61 +145,50 @@ public ResponseEntity<?> updateUser(
     }
 
 
-     @PostMapping("/booking/{venueId}")
-     @PreAuthorize("hasRole('USER')")
-     public ResponseEntity<?> createBooking(
-        @PathVariable Long venueId,
-        @RequestParam LocalDate bookingDate,
-        @RequestParam LocalTime bookingTime,
-        Authentication authentication) {
+    @PostMapping("/booking/{slotId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> createBooking(
+            @PathVariable Long slotId,
+            Authentication authentication) {
 
-    String username = authentication.getName();
+        String username = authentication.getName();
 
-    User user = userRepository.findByUsername(username)
-            .orElseThrow(() ->
-                    new RuntimeException("User not found"));
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found"
+                        ));
 
-    return ResponseEntity.ok(
-            bookingService.CreateBooking(
-                    user.getId(),
-                    venueId,
-                    bookingDate,
-                    bookingTime
-            )
-    );
-}
+        return ResponseEntity.ok(
+                bookingService.createBooking(
+                        user.getId(),
+                        slotId
+                )
+        );
+    }
+//     @PostMapping("/booking/{venueId}")
+//     @PreAuthorize("hasRole('USER')")
+//     public ResponseEntity<?> createBooking(
+//        @PathVariable Long venueId,
+//        @RequestParam LocalDate bookingDate,
+//        @RequestParam LocalTime bookingTime,
+//        Authentication authentication) {
+//
+//    String username = authentication.getName();
+//
+//    User user = userRepository.findByUsername(username)
+//            .orElseThrow(() ->
+//                    new RuntimeException("User not found"));
+//
+//    return ResponseEntity.ok(
+//            bookingService.CreateBooking(
+//                    user.getId(),
+//                    slotId
+//            )
+//    );
+//}
 
-//    @PostMapping("/booking/{venueId}")
-//    @PreAuthorize("hasRole('USER')")
-//    public ResponseEntity<?> createBooking(
-//            @PathVariable Long venueId,
-//            @RequestParam LocalDate bookingDate,
-//            @RequestParam LocalTime bookingTime,
-//            Authentication authentication) {
-//
-//        String username = authentication.getName();
-//
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() ->
-//                        new RuntimeException("User not found"));
-//
-//        System.out.println("=================================");
-//        System.out.println("USERNAME  : " + username);
-//        System.out.println("USER ID   : " + user.getId());
-//        System.out.println("VENUE ID  : " + venueId);
-//        System.out.println("DATE      : " + bookingDate);
-//        System.out.println("TIME      : " + bookingTime);
-//        System.out.println("=================================");
-//
-//        return ResponseEntity.ok(
-//                bookingService.CreateBooking(
-//                        user.getId(),
-//                        venueId,
-//                        bookingDate,
-//                        bookingTime
-//                )
-//        );
-//    }
 
     @PreAuthorize("hasRole('USER') or hasRole('OWNER')")
     @GetMapping("/owner-request/status")
@@ -240,8 +230,7 @@ public ResponseEntity<?> updateUser(
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/bookings")
-    public ResponseEntity<?> getMyBookings(
-            Authentication authentication) {
+    public ResponseEntity<?> getMyBookings(Authentication authentication) {
 
         String username = authentication.getName();
 
@@ -251,6 +240,20 @@ public ResponseEntity<?> updateUser(
 
         return ResponseEntity.ok(
                 bookingService.getUserBookings(user.getId())
+        );
+    }
+
+    @GetMapping("/venues/{venueId}/slots")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> getSlots(
+            @PathVariable Long venueId,
+            @RequestParam LocalDate date) {
+
+        return ResponseEntity.ok(
+                timeSlotService.getSlots(
+                        venueId,
+                        date
+                )
         );
     }
 }
