@@ -32,29 +32,20 @@ public class TimeSlotService {
     }
 
     @Transactional
-    public TimeSlot createSlot(
-            Long venueId,
-            TimeSlotRequestDTO request,
-            String username) {
+    public TimeSlot createSlot(Long venueId,
+                                TimeSlotRequestDTO request,
+                                String username) {
 
         Venue venue = venueRepository.findById(venueId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Venue not found"
-                        ));
+                .orElseThrow(() -> new RuntimeException("Venue not found"));
 
         User owner = userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Owner not found"
-                        ));
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
 
         if (!venue.getOwner().getId()
                 .equals(owner.getId())) {
 
-            throw new RuntimeException(
-                    "You don't own this venue"
-            );
+            throw new RuntimeException("You don't own this venue");
         }
 
         boolean exists =
@@ -68,9 +59,7 @@ public class TimeSlotService {
 
         if (exists) {
 
-            throw new RuntimeException(
-                    "This time slot already exists"
-            );
+            throw new RuntimeException("This time slot already exists");
         }
 
         TimeSlot slot = new TimeSlot();

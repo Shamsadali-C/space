@@ -21,17 +21,6 @@ public class BookingService {
     private final UserRepository userRepository;
     private final TimeSlotRepository timeSlotRepository;
 
-    public BookingService(BookingRepository bookingRepository,
-                          VenueRepository venueRepository,
-                          UserRepository userRepository,
-                          TimeSlotRepository timeSlotRepository) {
-
-        this.bookingRepository = bookingRepository;
-        this.venueRepository = venueRepository;
-        this.userRepository = userRepository;
-        this.timeSlotRepository = timeSlotRepository;
-    }
-
 
     @Transactional
     public Booking createBooking(
@@ -40,24 +29,16 @@ public class BookingService {
 
         TimeSlot slot = timeSlotRepository
                 .findById(slotId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Time slot not found"
-                        ));
+                .orElseThrow(() -> new RuntimeException("Time slot not found"));
 
         if (slot.getStatus() != TimeSlotStatus.AVAILABLE) {
 
-            throw new RuntimeException(
-                    "This time slot is not available"
-            );
+            throw new RuntimeException("This time slot is not available");
         }
 
         User user = userRepository
                 .findById(userId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found"
-                        ));
+                .orElseThrow(() -> new RuntimeException("User not found" ));
 
         Booking booking = new Booking();
 
@@ -81,13 +62,21 @@ public class BookingService {
     public void deleteBooking(Long id) {
 
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Booking not found"));
+                .orElseThrow(() ->new RuntimeException("Booking not found"));
 
         bookingRepository.delete(booking);
     }
 
+    public BookingService(BookingRepository bookingRepository,
+                          VenueRepository venueRepository,
+                          UserRepository userRepository,
+                          TimeSlotRepository timeSlotRepository) {
 
+        this.bookingRepository = bookingRepository;
+        this.venueRepository = venueRepository;
+        this.userRepository = userRepository;
+        this.timeSlotRepository = timeSlotRepository;
+    }
 
     public BookingDetailsDTO getBookingDetails(Long bookingId, User user) {
 
@@ -108,8 +97,7 @@ public class BookingService {
 
         Booking booking = bookingRepository
                 .findById(bookingId)
-                .orElseThrow(() ->new RuntimeException(
-                                "Booking not found"));
+                .orElseThrow(() ->new RuntimeException("Booking not found"));
 
         booking.setBookingStatus(BookingStatus.ACCEPTED.name());
 
