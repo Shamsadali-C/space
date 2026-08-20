@@ -86,7 +86,6 @@ public SecurityFilterChain securityFilterChain(
 
             .authorizeHttpRequests(auth -> auth
 
-                    // Public
                     .requestMatchers(
                             "/",
                             "/auth/**",
@@ -94,36 +93,30 @@ public SecurityFilterChain securityFilterChain(
                             "/v3/api-docs/**",
                             "/swagger-ui.html"
                     ).permitAll()
-
-                    // Admin
                     .requestMatchers("/admin/**")
                     .hasRole("ADMIN")
-
-                    // User
                     .requestMatchers("/user/**")
                     .hasRole("USER")
-
-                    // Owner
                     .requestMatchers("/owner/**")
                     .hasRole("OWNER")
-
                     .anyRequest()
                     .authenticated()
             )
+//               .formLogin(Customizer.withDefaults());
+//               .logout(log ->log
+//               .logoutUrl("/logout")
+//               .logoutSuccessUrl("/login?logout")
+//               .permitAll())
+//               .httpBasic(Customizer.withDefaults());
 
             .sessionManagement(session ->
                     session.sessionCreationPolicy(
-                            SessionCreationPolicy.STATELESS
-                    )
-            )
-
-            .addFilterBefore(
-                    jwtAuthFilter,
-                    UsernamePasswordAuthenticationFilter.class
-            );
+                            SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtAuthFilter,
+                    UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
-}
+    }
 
    @Bean
    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService){
@@ -137,7 +130,7 @@ public SecurityFilterChain securityFilterChain(
 //    public UserDetailsService userDetailsService(){
 //       UserDetails user= User.builder()
 //               .username("user")
-//               .password(passwordEncoder().encode("user123"))
+//               .password(passwordEncoder().encode("user123"))          // basic auth
 //               .roles("USER")
 //               .build();
 //
@@ -154,9 +147,7 @@ public SecurityFilterChain securityFilterChain(
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
-        );
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
 
         configuration.setAllowedMethods(
                 List.of(
@@ -168,19 +159,13 @@ public SecurityFilterChain securityFilterChain(
                 )
         );
 
-        configuration.setAllowedHeaders(
-                List.of("*")
-        );
+        configuration.setAllowedHeaders(List.of("*"));
 
         configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration(
-                "/**",
-                configuration
-        );
+        source.registerCorsConfiguration( "/**",configuration);
 
         return source;
     }

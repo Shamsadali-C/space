@@ -6,13 +6,9 @@ import Book.my.sapce.Repository.BookingRepository;
 import Book.my.sapce.Repository.TimeSlotRepository;
 import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -24,6 +20,17 @@ public class BookingService {
     private final VenueRepository venueRepository;
     private final UserRepository userRepository;
     private final TimeSlotRepository timeSlotRepository;
+
+    public BookingService(BookingRepository bookingRepository,
+                          VenueRepository venueRepository,
+                          UserRepository userRepository,
+                          TimeSlotRepository timeSlotRepository) {
+
+        this.bookingRepository = bookingRepository;
+        this.venueRepository = venueRepository;
+        this.userRepository = userRepository;
+        this.timeSlotRepository = timeSlotRepository;
+    }
 
 
     @Transactional
@@ -80,16 +87,7 @@ public class BookingService {
         bookingRepository.delete(booking);
     }
 
-    public BookingService(BookingRepository bookingRepository,
-                          VenueRepository venueRepository,
-                          UserRepository userRepository,
-                          TimeSlotRepository timeSlotRepository) {
 
-        this.bookingRepository = bookingRepository;
-        this.venueRepository = venueRepository;
-        this.userRepository = userRepository;
-        this.timeSlotRepository = timeSlotRepository;
-    }
 
     public BookingDetailsDTO getBookingDetails(Long bookingId, User user) {
 
