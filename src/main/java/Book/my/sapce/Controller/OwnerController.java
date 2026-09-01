@@ -1,9 +1,7 @@
 package Book.my.sapce.Controller;
 
-import Book.my.sapce.DTO.BookingDetailsDTO;
 import Book.my.sapce.DTO.TimeSlotRequestDTO;
 import Book.my.sapce.DTO.VenueRequestDTO;
-import Book.my.sapce.Model.User;
 import Book.my.sapce.Model.Venue;
 import Book.my.sapce.Model.VenueImages;
 import Book.my.sapce.Service.BookingService;
@@ -93,15 +91,19 @@ public class OwnerController {
     }
 
     @PreAuthorize("hasRole('OWNER')")
+    @PutMapping("/venue/available/{venueId}")
+    public ResponseEntity<?>available (@PathVariable Long venueId){
+        return ResponseEntity.ok(venueService.available(venueId));
+    }
+
+    @PreAuthorize("hasRole('OWNER')")
     @PutMapping("/venue/holiday/{venueId}")
     public ResponseEntity<?> holiday(@PathVariable Long venueId){
         return ResponseEntity.ok(venueService.holiday(venueId));
     }
 
-    @PostMapping(
-            value = "/venue/{venueId}/images",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
+    @PostMapping(value = "/venue/{venueId}/images",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadFile(
             @PathVariable Long venueId,
             @RequestParam("files") List<MultipartFile> files) {

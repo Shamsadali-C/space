@@ -4,7 +4,6 @@ import Book.my.sapce.DTO.VenueRequestDTO;
 import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -104,6 +103,13 @@ public class VenueService {
         v.setStatus(VenueStatus.HOLIDAY);
 
 
+        return venueRepository.save(v);
+    }
+
+    public Venue available(Long venueId){
+        Venue v=venueRepository.findById(venueId)
+                .orElseThrow(()->new RuntimeException("venue not found"));
+        v.setStatus(VenueStatus.AVAILABLE);
         return venueRepository.save(v);
     }
 

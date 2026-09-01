@@ -38,13 +38,13 @@ public class AdminController {
     @GetMapping("/dashboard")
     public ResponseEntity<Map<String, Long>> dashboard() {
         Map<String, Long> map = new HashMap<>();
-        map.put("totalUsers", userRepository.count());
+//        map.put("totalUsers", userRepository.count());
         map.put("totalVenues", venueRepository.count());
         map.put("totalBookings", bookingRepository.count());
 
         map.put("users", userRepository.countByRole(Role.USER));
         map.put("owners", userRepository.countByRole(Role.OWNER));
-        map.put("admins", userRepository.countByRole(Role.ADMIN));
+//        map.put("admins", userRepository.countByRole(Role.ADMIN));
 
         map.put("pendingBookings", bookingRepository.countByBookingStatus("PENDING"));
         map.put("rejectedBookings", bookingRepository.countByBookingStatus("REJECTED"));

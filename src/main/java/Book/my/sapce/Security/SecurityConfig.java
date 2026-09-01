@@ -91,16 +91,11 @@ public SecurityFilterChain securityFilterChain(
                             "/auth/**",
                             "/swagger-ui/**",
                             "/v3/api-docs/**",
-                            "/swagger-ui.html"
-                    ).permitAll()
-                    .requestMatchers("/admin/**")
-                    .hasRole("ADMIN")
-                    .requestMatchers("/user/**")
-                    .hasRole("USER")
-                    .requestMatchers("/owner/**")
-                    .hasRole("OWNER")
-                    .anyRequest()
-                    .authenticated()
+                            "/swagger-ui.html").permitAll()
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/user/**").hasRole("USER")
+                    .requestMatchers("/owner/**").hasRole("OWNER")
+                    .anyRequest().authenticated()
             )
 //               .formLogin(Customizer.withDefaults());
 //               .logout(log ->log

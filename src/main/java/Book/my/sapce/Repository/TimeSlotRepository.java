@@ -9,20 +9,19 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface TimeSlotRepository
-        extends JpaRepository<TimeSlot, Long> {
+public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
 
     List<TimeSlot> findByVenueIdAndSlotDate(
             Long venueId,
             LocalDate slotDate
     );
 
-    Optional<TimeSlot> findByVenueIdAndSlotDateAndStartTimeAndEndTime(
-            Long venueId,
-            LocalDate slotDate,
-            LocalTime startTime,
-            LocalTime endTime
-    );
+//    Optional<TimeSlot> findByVenueIdAndSlotDateAndStartTimeAndEndTime(
+//            Long venueId,
+//            LocalDate slotDate,
+//            LocalTime startTime,
+//            LocalTime endTime
+//    );
 
     boolean existsByVenueIdAndSlotDateAndStartTimeAndEndTime(
             Long venueId,

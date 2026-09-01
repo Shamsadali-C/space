@@ -101,11 +101,9 @@ public class BookingService {
 
         booking.setBookingStatus(BookingStatus.ACCEPTED.name());
 
-        TimeSlot slot = booking.getTimeSlot();
-
-        slot.setStatus(TimeSlotStatus.BOOKED);
-
-        timeSlotRepository.save(slot);
+//        TimeSlot slot = booking.getTimeSlot();
+//        slot.setStatus(TimeSlotStatus.BOOKED);
+//        timeSlotRepository.save(slot);
 
         return bookingRepository.save(booking);
     }
@@ -129,21 +127,17 @@ public class BookingService {
         booking.setBookingStatus(BookingStatus.REJECTED.name() );
 
         TimeSlot slot = booking.getTimeSlot();
-
         slot.setStatus(TimeSlotStatus.AVAILABLE);
-
         timeSlotRepository.save(slot);
 
         return bookingRepository.save(booking);
     }
 
     public List<Booking> getOwnerBookings(String username) {
-
         return bookingRepository.findByVenueOwnerUsername(username);
     }
 
     public List<Booking> getUserBookings(Long userId) {
-
         return bookingRepository.findByUserId(userId);
     }
 
