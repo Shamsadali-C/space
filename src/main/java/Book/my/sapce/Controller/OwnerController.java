@@ -63,21 +63,6 @@ public class OwnerController {
         );
     }
 
-//    @GetMapping("/bookings/{bookingId}")
-//    public ResponseEntity<BookingDetailsDTO> getBookingDetails(
-//            @PathVariable Long bookingId, @RequestParam Long userId) {
-//
-//        User user = new User();
-//        user.setId(userId);
-//
-//        BookingDetailsDTO booking = bookingService.getBookingDetails(bookingId, user);
-//
-//        return ResponseEntity.ok(booking);
-//    }
-
-
-
-
 
     @PreAuthorize("hasRole('OWNER')")
     @PostMapping("/add-venue")
@@ -151,18 +136,7 @@ public class OwnerController {
     }
 
 
-//    @DeleteMapping("/venue/images/{venueId}")
-//    public ResponseEntity<String> deleteImage(@PathVariable Long venueId) {
-//
-//        venueImagesService.deleteVenueImage(venueId);
-//
-//        return ResponseEntity.ok("Image deleted successfully");
-//    }
 
-//    @GetMapping
-//    public List<VenueImages> getImages() {
-//        return venueImagesService.getAllImages();
-//    }
 
     @PreAuthorize("hasRole('OWNER')")
     @PutMapping("/Approve/{bookingId}")
@@ -179,18 +153,6 @@ public class OwnerController {
     }
 
 
-//    @GetMapping
-//    public List<Booking> getBooking() {
-//        return bookingService.getAllBooking();
-//    }
-
-//    @DeleteMapping("/bookings/{id}")
-//    public String deleteBooking(@PathVariable Long id) {
-//
-//        bookingService.deleteBooking(id);
-//
-//        return "Booking deleted successfully";
-//    }
 
     @DeleteMapping("/venue/{id}")
     public String deleteVenue(@PathVariable Long id) {
