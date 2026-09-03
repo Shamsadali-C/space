@@ -85,9 +85,18 @@ public class UserController {
     return ResponseEntity.ok(updatedUser);
 }
 
-    @GetMapping("/images/{id}")
-    public ResponseEntity<List<VenueImages>> getImagesByVenue(@PathVariable Long id) {
-        return ResponseEntity.ok(venueImagesService.getImagesByVenue(id));
+//    @GetMapping("/images/{venueId}")
+//    public ResponseEntity<List<VenueImages>> getImagesByVenue(@PathVariable Long id) {
+//        return ResponseEntity.ok(venueImagesService.getImagesByVenue(id));
+//    }
+
+    @GetMapping("/images/{venueId}")
+    public ResponseEntity<List<VenueImages>> getImagesByVenue(
+            @PathVariable Long venueId) {
+
+        return ResponseEntity.ok(
+                venueImagesService.getImagesByVenue(venueId)
+        );
     }
 
     @GetMapping("/Profile")

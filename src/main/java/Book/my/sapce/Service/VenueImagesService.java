@@ -117,4 +117,86 @@ public class VenueImagesService {
 
         venueImagesRepository.delete(venueImage);
     }
+
+    public void updateVenueImage(
+            Long imageId,
+            MultipartFile newImage) {
+
+        VenueImages venueImage =
+                venueImagesRepository.findById(imageId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Image not found with id: " + imageId
+                                )
+                        );
+
+        if (newImage == null || newImage.isEmpty()) {
+            throw new RuntimeException(
+                    "Please select an image"
+            );
+        }
+
+        String contentType =
+                newImage.getContentType();
+
+        if (contentType == null ||
+                !contentType.startsWith("image/")) {
+
+            throw new RuntimeException(
+                    "Only image files are allowed"
+            );
+        }
+
+        String originalName =
+                newImage.getOriginalFilename();
+
+        if (originalName == null ||
+                !originalName.contains(".")) {
+
+            throw new RuntimeException(
+                    "Invalid image file"
+            );
+        }
+
+        String extension =
+                originalName.substring(
+                        originalName.lastIndexOf(".")
+                );
+
+        String newImageName =
+                UUID.randomUUID() + extension;
+
+        try {
+
+            // Delete old physical image
+            File oldFile =
+                    new File(
+                            FILE_UPLOAD_DIR,
+                            venueImage.getImageUrl()
+                    );
+
+            if (oldFile.exists()) {
+                oldFile.delete();
+            }
+
+            // Save new image
+            File newFile =
+                    new File(
+                            FILE_UPLOAD_DIR,
+                            newImageName
+                    );
+
+            newImage.transferTo(newFile);
+
+            venueImage.setImageUrl(newImageName);
+
+            venueImagesRepository.save(venueImage);
+
+        } catch (IOException e) {
+
+            throw new RuntimeException(
+                    "Image update failed"
+            );
+        }
+    }
 }

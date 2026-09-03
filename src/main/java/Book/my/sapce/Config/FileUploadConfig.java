@@ -10,8 +10,6 @@ public class FileUploadConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(
-                        "file:///C:/Users/Shamsadali/OneDrive/intership/upload/"
-                );
+                .addResourceLocations( "file:C:/Users/Shamsadali/OneDrive/intership/upload/");
     }
 }

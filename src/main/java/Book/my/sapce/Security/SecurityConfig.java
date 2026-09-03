@@ -89,6 +89,7 @@ public SecurityFilterChain securityFilterChain(
                     .requestMatchers(
                             "/",
                             "/auth/**",
+                            "/uploads/**",
                             "/swagger-ui/**",
                             "/v3/api-docs/**",
                             "/swagger-ui.html").permitAll()

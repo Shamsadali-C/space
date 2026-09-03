@@ -6,7 +6,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "venue_images")
-@Data
 @Builder
 @Getter
 @Setter
@@ -16,7 +15,7 @@ public class VenueImages {
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     private String imageUrl;
 

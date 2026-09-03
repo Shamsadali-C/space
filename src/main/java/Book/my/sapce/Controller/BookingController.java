@@ -29,7 +29,6 @@ public class BookingController {
 //    }
 
 
-    @PreAuthorize("hasRole('OWNER')")
     @PutMapping("/Approve/{bookingId}")
     public ResponseEntity<?> approve(@PathVariable Long bookingId){
         return ResponseEntity.ok(bookingService.approve(bookingId));
@@ -37,7 +36,6 @@ public class BookingController {
 
 
 
-    @PreAuthorize("hasRole('OWNER')")
     @PutMapping("/Reject/{bookingId}")
     public ResponseEntity<?> reject(@PathVariable Long bookingId){
         return ResponseEntity.ok(bookingService.reject(bookingId));

@@ -116,22 +116,48 @@ public class OwnerController {
     }
 
     @GetMapping("/venue/{venueId}/images")
-    public ResponseEntity<List<VenueImages>> getImagesByVenue(
-            @PathVariable Long venueId) {
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<?> getImages( @PathVariable Long venueId) {
 
         return ResponseEntity.ok(
                 venueImagesService.getImagesByVenue(venueId)
         );
     }
 
+    @PutMapping( value = "/venue/images/{imageId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<String> updateImage(
+            @PathVariable Long imageId,
+            @RequestParam("file") MultipartFile file) {
 
-    @DeleteMapping("/venue/images/{id}")
-    public ResponseEntity<String> deleteImage(@PathVariable Long id) {
+        venueImagesService.updateVenueImage(
+                imageId,
+                file
+        );
 
-        venueImagesService.deleteVenueImage(id);
-
-        return ResponseEntity.ok("Image deleted successfully");
+        return ResponseEntity.ok("Image updated successfully");
     }
+
+    @DeleteMapping("/venue/images/{imageId}")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<String> deleteImage(
+            @PathVariable Long imageId) {
+
+        venueImagesService.deleteVenueImage(imageId);
+
+        return ResponseEntity.ok(
+                "Image deleted successfully"
+        );
+    }
+
+
+//    @DeleteMapping("/venue/images/{venueId}")
+//    public ResponseEntity<String> deleteImage(@PathVariable Long venueId) {
+//
+//        venueImagesService.deleteVenueImage(venueId);
+//
+//        return ResponseEntity.ok("Image deleted successfully");
+//    }
 
 //    @GetMapping
 //    public List<VenueImages> getImages() {
