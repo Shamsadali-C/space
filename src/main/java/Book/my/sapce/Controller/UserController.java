@@ -85,10 +85,7 @@ public class UserController {
     return ResponseEntity.ok(updatedUser);
 }
 
-//    @GetMapping("/images/{venueId}")
-//    public ResponseEntity<List<VenueImages>> getImagesByVenue(@PathVariable Long id) {
-//        return ResponseEntity.ok(venueImagesService.getImagesByVenue(id));
-//    }
+
 
     @GetMapping("/images/{venueId}")
     public ResponseEntity<List<VenueImages>> getImagesByVenue(
@@ -175,27 +172,7 @@ public class UserController {
                 )
         );
     }
-//     @PostMapping("/booking/{venueId}")
-//     @PreAuthorize("hasRole('USER')")
-//     public ResponseEntity<?> createBooking(
-//        @PathVariable Long venueId,
-//        @RequestParam LocalDate bookingDate,
-//        @RequestParam LocalTime bookingTime,
-//        Authentication authentication) {
-//
-//    String username = authentication.getName();
-//
-//    User user = userRepository.findByUsername(username)
-//            .orElseThrow(() ->
-//                    new RuntimeException("User not found"));
-//
-//    return ResponseEntity.ok(
-//            bookingService.CreateBooking(
-//                    user.getId(),
-//                    slotId
-//            )
-//    );
-//}
+
 
 
     @PreAuthorize("hasRole('USER') or hasRole('OWNER')")
