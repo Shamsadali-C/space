@@ -24,7 +24,7 @@ public class VenueImagesService {
     public final VenueImagesRepository venueImagesRepository;
     public final VenueRepository venueRepository;
 
-    public static final String FILE_UPLOAD_DIR = "C:\\Users\\Shamsadali\\OneDrive\\intership\\upload\\";
+    public static final String FILE_UPLOAD_DIR = "C:\\Users\\Shamsadali\\Desktop\\images\\uploads";
 
 
     public void uploadfile(Long venueId, List<MultipartFile> file) {
