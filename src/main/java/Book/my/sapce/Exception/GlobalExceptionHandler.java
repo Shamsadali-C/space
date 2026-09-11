@@ -35,9 +35,25 @@ public class GlobalExceptionhandler extends RuntimeException{
                     ));
         }
 
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleUsernameExists(
+            UsernameAlreadyExistsException ex) {
 
+        Map<String, Object> response = new HashMap<>();
 
+        response.put("error", "Conflict");
+        response.put("message", ex.getMessage());
+        response.put("status", 409);
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(response);
     }
+}
+
+
+
+
 
 
 

@@ -2,6 +2,7 @@ package Book.my.sapce.Service;
 
 import Book.my.sapce.DTO.LoginRequestDTO;
 import Book.my.sapce.DTO.RegisterRequestDTO;
+import Book.my.sapce.Exception.UsernameAlreadyExistsException;
 import Book.my.sapce.Model.Role;
 import Book.my.sapce.Model.User;
 import Book.my.sapce.Repository.UserRepository;
@@ -27,8 +28,8 @@ public class AuthService {
 
     public  String register(RegisterRequestDTO dto) {
 
-        if(userRepository.existsByUsername(dto.getUsername())){
-            throw new RuntimeException("user Already exist");
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new UsernameAlreadyExistsException("Username already exists");
         }
         User user = new User();
 
