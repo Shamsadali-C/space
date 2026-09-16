@@ -29,6 +29,8 @@ public class TimeSlot {
     @Column(nullable = false)
     private LocalTime startTime;
 
+    private Integer duration;
+
     @Column(nullable = false)
     private LocalTime endTime;
 

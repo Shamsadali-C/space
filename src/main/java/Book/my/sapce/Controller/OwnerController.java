@@ -3,11 +3,7 @@ package Book.my.sapce.Controller;
 import Book.my.sapce.DTO.TimeSlotRequestDTO;
 import Book.my.sapce.DTO.VenueRequestDTO;
 import Book.my.sapce.Model.Venue;
-import Book.my.sapce.Model.VenueImages;
-import Book.my.sapce.Service.BookingService;
-import Book.my.sapce.Service.TimeSlotService;
-import Book.my.sapce.Service.VenueImagesService;
-import Book.my.sapce.Service.VenueService;
+import Book.my.sapce.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -28,15 +26,18 @@ public class OwnerController {
     private final VenueImagesService venueImagesService;
     private final BookingService bookingService;
     private final TimeSlotService timeSlotService;
+    private final SlotDurationService slotDurationService;
     public OwnerController(VenueService venueService,
                            VenueImagesService venueImagesService,
                            BookingService bookingService,
-                           TimeSlotService timeSlotService){
+                           TimeSlotService timeSlotService,
+                           SlotDurationService slotDurationService){
 
         this.venueService=venueService;
         this.venueImagesService=venueImagesService;
         this.bookingService=bookingService;
         this.timeSlotService=timeSlotService;
+        this.slotDurationService=slotDurationService;
     }
 
     @PreAuthorize("hasRole('OWNER')")
@@ -70,9 +71,9 @@ public class OwnerController {
         return venueService.addVenue(venueRequest);
     }
     @PreAuthorize("hasRole('OWNER')")
-    @PutMapping("/venue/maintanence/{venueId}")
-    public ResponseEntity<?> maintanence(@PathVariable Long venueId){
-        return ResponseEntity.ok(venueService.maintanence(venueId));
+    @PutMapping("/venue/maintenance/{venueId}")
+    public ResponseEntity<?> maintenance(@PathVariable Long venueId,@RequestParam LocalDate date) throws Exception {
+        return ResponseEntity.ok(venueService.maintenance(venueId, date));
     }
 
     @PreAuthorize("hasRole('OWNER')")
@@ -83,20 +84,15 @@ public class OwnerController {
 
     @PreAuthorize("hasRole('OWNER')")
     @PutMapping("/venue/holiday/{venueId}")
-    public ResponseEntity<?> holiday(@PathVariable Long venueId){
-        return ResponseEntity.ok(venueService.holiday(venueId));
+    public ResponseEntity<?> holiday(@PathVariable Long venueId,@RequestParam LocalDate date) throws Exception {
+        return ResponseEntity.ok(venueService.holiday(venueId, date));
     }
 
-    @PostMapping(value = "/venue/{venueId}/images",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadFile(
-            @PathVariable Long venueId,
-            @RequestParam("files") List<MultipartFile> files) {
+    @PostMapping(value = "/venue/{venueId}/images",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadFile(@PathVariable Long venueId,@RequestParam("files") List<MultipartFile> files) {
 
         venueImagesService.uploadfile(venueId, files);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
+        return ResponseEntity .status(HttpStatus.CREATED)
                 .body("Images uploaded successfully");
     }
 
@@ -135,22 +131,19 @@ public class OwnerController {
         );
     }
 
-
-
-
-    @PreAuthorize("hasRole('OWNER')")
-    @PutMapping("/Approve/{bookingId}")
-    public ResponseEntity<?> approve(@PathVariable Long bookingId){
-        return ResponseEntity.ok(bookingService.approve(bookingId));
-    }
-
-    @PreAuthorize("hasRole('OWNER')")
-      @PutMapping("/reject/{bookingId}")
-      public ResponseEntity<?> reject(@PathVariable Long bookingId) {
-
-       return ResponseEntity.ok(
-            bookingService.reject(bookingId));
-    }
+//    @PreAuthorize("hasRole('OWNER')")
+//    @PutMapping("/Approve/{bookingId}")
+//    public ResponseEntity<?> approve(@PathVariable Long bookingId){
+//        return ResponseEntity.ok(bookingService.approve(bookingId));
+//    }
+//
+//    @PreAuthorize("hasRole('OWNER')")
+//      @PutMapping("/reject/{bookingId}")
+//      public ResponseEntity<?> reject(@PathVariable Long bookingId) {
+//
+//       return ResponseEntity.ok(
+//            bookingService.reject(bookingId));
+//    }
 
 
 
@@ -175,6 +168,15 @@ public class OwnerController {
                         request,
                         username
                 )
+        );
+    }
+
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/durations")
+    public ResponseEntity<?> getActiveDurations() {
+
+        return ResponseEntity.ok(
+                slotDurationService.getActiveDurations()
         );
     }
 
