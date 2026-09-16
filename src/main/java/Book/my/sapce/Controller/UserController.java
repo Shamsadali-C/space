@@ -1,9 +1,7 @@
 package Book.my.sapce.Controller;
 
-import Book.my.sapce.DTO.OwnerRequestDTO;
-import Book.my.sapce.DTO.OwnerRequestResponseDTO;
+import Book.my.sapce.DTO.*;
 import Book.my.sapce.Model.*;
-import Book.my.sapce.Repository.BookingRepository;
 import Book.my.sapce.Repository.OwnerRequestRepository;
 import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Service.*;
@@ -23,7 +21,6 @@ public class UserController {
 
 
     private final UserService userService;
-    private final BookingRepository bookingRepository;
     private final VenueService venueService;
     private final UserRepository userRepository;
     private final BookingService bookingService;
@@ -32,7 +29,6 @@ public class UserController {
     private final TimeSlotService timeSlotService;
 
     public UserController(UserService userService,
-                          BookingRepository bookingRepository,
                           UserRepository userRepository,
                           VenueService venueService,
                           BookingService bookingService,
@@ -41,7 +37,6 @@ public class UserController {
                           TimeSlotService timeSlotService){
 
         this.userService=userService;
-        this.bookingRepository=bookingRepository;
         this.userRepository=userRepository;
         this.venueService=venueService;
         this.bookingService=bookingService;
@@ -66,6 +61,41 @@ public class UserController {
 //
 //    }
 //
+
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/user/booking/{bookingId}/cancel")
+    public ResponseEntity<?> cancelBooking(
+            @PathVariable Long bookingId,
+            Authentication authentication) {
+
+        try {
+
+            User user =
+                    userRepository
+                            .findByUsername(
+                                    authentication.getName()
+                            )
+                            .orElseThrow(() ->
+                                    new RuntimeException(
+                                            "User not found"
+                                    ));
+
+            Booking booking =
+                    bookingService.cancelBooking(
+                            user.getId(),
+                            bookingId
+                    );
+
+            return ResponseEntity.ok(booking);
+
+        } catch (Exception e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
     @PutMapping("/profile")
     public ResponseEntity<?> updateUser(
         @RequestBody User userData,
@@ -97,7 +127,7 @@ public class UserController {
     }
 
     @GetMapping("/Profile")
-    public ResponseEntity<?> getprofile(Authentication authentication){
+    public ResponseEntity<?> getProfile(Authentication authentication){
         String username= authentication.getName();
         User user=userRepository.findByUsername(username)
                 .orElseThrow(()-> new RuntimeException());
@@ -119,8 +149,7 @@ public class UserController {
 
 
         Optional<OwnerRequest> existingRequest =
-                ownerRequestRepository.findByUserIdAndStatus(
-                        user.getId(),                              // Prevent duplicate pending request
+                ownerRequestRepository.findByUserIdAndStatus(user.getId(),        // Prevent duplicate pending request
                         OwnerRequestStatus.PENDING
                 );
 
@@ -150,39 +179,114 @@ public class UserController {
     }
 
 
-    @PostMapping("/booking/{slotId}")
+//    @PostMapping("/booking/{slotId}")
+//    @PreAuthorize("hasRole('USER')")
+//    public ResponseEntity<?> createBooking(
+//            @PathVariable Long slotId,
+//            Authentication authentication) {
+//
+//        String username = authentication.getName();
+//
+//        User user = userRepository
+//                .findByUsername(username)
+//                .orElseThrow(() ->
+//                        new RuntimeException(
+//                                "User not found"
+//                        ));
+//
+//        return ResponseEntity.ok(
+//                bookingService.createBooking(
+//                        user.getId(),
+//                        slotId
+//                )
+//        );
+//    }
+
+
+//    @PostMapping("/booking")
+//    @PreAuthorize("hasRole('USER')")
+//    public ResponseEntity<?> createBooking(
+//            @RequestBody BookingRequestDTO request,
+//            Authentication authentication) {
+//
+//        String username = authentication.getName();
+//
+//        User user = userRepository
+//                .findByUsername(username)
+//                .orElseThrow(() ->
+//                        new RuntimeException("User not found"));
+//
+//        return ResponseEntity.ok(
+//                bookingService.createBooking(
+//                        user.getId(),
+//                        request.getSlotIds()
+//                )
+//        );
+//    }
+
+    @PostMapping("/payment/create-order")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> createBooking(
-            @PathVariable Long slotId,
-            Authentication authentication) {
+    public ResponseEntity<?> createPaymentOrder(@RequestBody BookingRequestDTO request, Authentication authentication) {
+        try {
+            String username = authentication.getName();
 
-        String username = authentication.getName();
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userRepository
-                .findByUsername(username)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found"
-                        ));
+            PaymentOrderResponseDTO response = bookingService.createPaymentOrder(user.getId(), request.getSlotIds());
 
-        return ResponseEntity.ok(
-                bookingService.createBooking(
-                        user.getId(),
-                        slotId
-                )
-        );
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/payment/verify")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> verifyPayment(@RequestBody PaymentVerifyDTO request, Authentication authentication) {
+        try {
+            String username = authentication.getName();
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            Booking booking = bookingService.verifyPayment(user.getId(), request);
+
+            return ResponseEntity.ok(booking);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/payment/failure/{bookingId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> paymentFailure( @PathVariable Long bookingId,
+                                              Authentication authentication) {
+
+        try {
+            String username = authentication.getName();
+
+            User user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+            Booking booking =bookingService.paymentFailure(user.getId(),bookingId);
+            return ResponseEntity.ok(booking);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                                 .body(e.getMessage());
+        }
     }
 
 
 
     @PreAuthorize("hasRole('USER') or hasRole('OWNER')")
     @GetMapping("/owner-request/status")
-    public ResponseEntity<?> getMyOwnerRequestStatus(
-            Authentication authentication
-    ) {
-
+    public ResponseEntity<?> getMyOwnerRequestStatus(Authentication authentication) {
         String username = authentication.getName();
-
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
                         new RuntimeException("User not found"));
@@ -234,11 +338,8 @@ public class UserController {
             @PathVariable Long venueId,
             @RequestParam LocalDate date) {
 
-        return ResponseEntity.ok(
-                timeSlotService.getSlots(
+        return ResponseEntity.ok(timeSlotService.getSlots(
                         venueId,
-                        date
-                )
-        );
+                        date));
     }
 }

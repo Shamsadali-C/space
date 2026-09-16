@@ -33,7 +33,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Don't check JWT for login/register
         if (request.getServletPath().equals("/auth/login")
                 || request.getServletPath().equals("/auth/register")) {
 

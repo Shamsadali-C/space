@@ -45,10 +45,9 @@ public class Venue {
 
 
 
-    @Builder.Default
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private VenueStatus status=VenueStatus.AVAILABLE;
+    private VenueStatus status;
 
 
 

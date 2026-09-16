@@ -3,26 +3,22 @@ package Book.my.sapce.Model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 
 @Getter
 @Setter
 @Entity
-@Table(
-        uniqueConstraints = @UniqueConstraint(
-        columnNames ={
-                "venue_Id",
-                "date",
-                "time"
-        }
-        ))
+@Table(name = "booking")
+
 
 public class Booking {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
     @ManyToOne
     @JoinColumn(name="user_id",nullable = false)
@@ -31,14 +27,38 @@ public class Booking {
     @JoinColumn(name="venue_id",nullable = false)
     private Venue venue;
 
-    private String bookingStatus;
 
-//    private LocalDate date;
-//
-//    private LocalTime time;
-    @ManyToOne
-    @JoinColumn(name = "time_slot_id", nullable = false)
-    private TimeSlot timeSlot;
+    private LocalDate bookingDate;
+
+    private LocalTime startTime;
+    private LocalTime endTime;
+
+    private Double totalPrice;
+    private Double hourlyPrice;
+    private Integer durationHours;
+    private Double advanceAmount;
+
+    @Enumerated(EnumType.STRING)
+    private BookingStatus bookingStatus;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+    @Column(name = "razorpay_order_id")
+    private String razorpayOrderId;
+    @Column(name = "razorpay_payment_id")
+    private String razorpayPaymentId;
+    @Column(name = "razorpay_signature")
+    private String razorpaySignature;
+
+
+    private Double refundAmount;
+
+    private LocalDateTime cancelledAt;
+
+//    @ManyToOne
+//    @JoinColumn(name = "time_slot_id", nullable = false)
+//    private TimeSlot timeSlot;
 
 
 

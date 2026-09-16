@@ -1,9 +1,9 @@
 package Book.my.sapce.Model;
 
 public enum   BookingStatus {
-    ACCEPTED,
+    BOOKED,
     PENDING,
-    REJECTED,
+    CANCELLED
 
 
 }

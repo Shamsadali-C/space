@@ -2,8 +2,7 @@ package Book.my.sapce.Model;
 
 public enum VenueStatus {
     AVAILABLE,
-    UNAVAILABLE,
-    MAINTANENCE,
+    MAINTENANCE,
     HOLIDAY,
 
 

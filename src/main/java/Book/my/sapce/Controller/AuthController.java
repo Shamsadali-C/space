@@ -2,34 +2,20 @@ package Book.my.sapce.Controller;
 
 import Book.my.sapce.DTO.LoginRequestDTO;
 import Book.my.sapce.DTO.RegisterRequestDTO;
-import Book.my.sapce.Model.Role;
-import Book.my.sapce.Model.User;
-import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Service.AuthService;
-import Book.my.sapce.Service.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private JwtService jwtService;
+
+
     private final AuthService authService;
 
-    public AuthController(UserRepository userRepository,
-                          PasswordEncoder passwordEncoder,
-                          JwtService jwtService,
-                          AuthService authService) {
-
-
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
+    public AuthController(AuthService authService) {
         this.authService=authService;
     }
 
@@ -54,7 +40,7 @@ public class AuthController {
        } catch (RuntimeException e) {
           return ResponseEntity
                   .status(HttpStatus.UNAUTHORIZED)
-                  .body("Invalid Username or Password");
+                  .body(e.getMessage());
        }
     }
 }

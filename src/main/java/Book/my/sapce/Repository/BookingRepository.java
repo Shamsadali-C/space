@@ -1,10 +1,12 @@
 package Book.my.sapce.Repository;
 
 import Book.my.sapce.Model.Booking;
+import Book.my.sapce.Model.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,11 +16,15 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findByIdAndUserId(Long bookingId, Long userId);
 
-    long countByBookingStatus(String bookingStatus);
+    long countByBookingStatus(BookingStatus bookingStatus);
 
     List<Booking> findByVenueOwnerUsername(String username);
     List<Booking> findByUserId(Long userId);
 
+    List<Booking> findByVenueIdAndBookingDate(
+            Long venueId,
+            LocalDate bookingDate
+    );
 
 
 }

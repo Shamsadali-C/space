@@ -16,9 +16,8 @@ import java.util.Optional;
 public interface VenueRepository extends JpaRepository<Venue, Long> {
 
     List<Venue> findByOwner(User owner);
-//    @Lock(LockModeType.PESSIMISTIC_WRITE)
-//    @Query("SELECT v FROM Venue v WHERE v.id = :id")
-//    Optional<Venue> findByIdForUpdate(@Param("id") Long id);
+
+
 
 
 }

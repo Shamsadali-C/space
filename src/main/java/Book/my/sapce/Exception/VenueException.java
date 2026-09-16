@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class VenueException {
+public class VenueException extends RuntimeException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
      public ResponseEntity<String> error(MethodArgumentNotValidException ex){

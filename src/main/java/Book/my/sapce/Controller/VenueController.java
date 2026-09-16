@@ -9,7 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/venue")
@@ -24,15 +25,15 @@ public class VenueController {
         return venueService.addVenue(venueRequest);
     }
     @PreAuthorize("hasRole('OWNER')")
-    @PutMapping("/maintanence/{venueId}")
-    public ResponseEntity<?> maintanence(@PathVariable Long venueId){
-        return ResponseEntity.ok(venueService.maintanence(venueId));
+    @PutMapping("/maintenance/{venueId}")
+    public ResponseEntity<?> maintenance(@PathVariable Long venueId,@RequestParam LocalDate date) throws Exception {
+        return ResponseEntity.ok(venueService.maintenance(venueId, date));
     }
 
     @PreAuthorize("hasRole('OWNER')")
-    @PutMapping("/holiday/{venueId}")
-    public ResponseEntity<?> holiday(@PathVariable Long venueId){
-        return ResponseEntity.ok(venueService.holiday(venueId));
+    @PutMapping("/venue/holiday/{venueId}")
+    public ResponseEntity<?> holiday(@PathVariable Long venueId,@RequestParam LocalDate date) throws Exception {
+        return ResponseEntity.ok(venueService.holiday(venueId, date));
     }
 
 //    @GetMapping

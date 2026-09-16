@@ -2,6 +2,7 @@ package Book.my.sapce.Service;
 
 import Book.my.sapce.DTO.LoginRequestDTO;
 import Book.my.sapce.DTO.RegisterRequestDTO;
+import Book.my.sapce.Exception.InvalidLoginException;
 import Book.my.sapce.Exception.UsernameAlreadyExistsException;
 import Book.my.sapce.Model.Role;
 import Book.my.sapce.Model.User;
@@ -29,19 +30,15 @@ public class AuthService {
     public  String register(RegisterRequestDTO dto) {
 
         if (userRepository.existsByUsername(dto.getUsername())) {
-            throw new UsernameAlreadyExistsException("Username already exists");
+            throw new UsernameAlreadyExistsException("Username already exists, Choose another one");
         }
         User user = new User();
 
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
 
-        user.setPassword(
-                passwordEncoder.encode(dto.getPassword())
-        );
-
+        user.setPassword( passwordEncoder.encode(dto.getPassword()));
         user.setRole(Role.USER);
-
         userRepository.save(user);
 
         return "User registered successfully";
@@ -49,16 +46,11 @@ public class AuthService {
 
     public String login(LoginRequestDTO dto) {
 
-        User user = userRepository
-                .findByUsername(dto.getUsername())
-                .orElseThrow(() ->
-                        new RuntimeException("Invalid Username"));
+        User user = userRepository.findByUsername(dto.getUsername())
+                          .orElseThrow(() -> new InvalidLoginException("Invalid Username"));
 
-        if (!passwordEncoder.matches(
-                dto.getPassword(),
-                user.getPassword())) {
-
-            throw new RuntimeException("Invalid password");
+        if (!passwordEncoder.matches( dto.getPassword(), user.getPassword())) {
+            throw new InvalidLoginException("Invalid password");
         }
         return jwtService.generateToken(user);
     }

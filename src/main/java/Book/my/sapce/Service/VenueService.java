@@ -4,12 +4,14 @@ import Book.my.sapce.DTO.VenueRequestDTO;
 import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.UserRepository;
 import Book.my.sapce.Repository.VenueRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,13 +20,16 @@ public class VenueService {
 
     private final VenueRepository venueRepository;
     private final UserRepository userRepository;
+    private final BookingService bookingService;
 
     public VenueService(
             VenueRepository venueRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            BookingService bookingService) {
 
         this.venueRepository = venueRepository;
         this.userRepository = userRepository;
+        this.bookingService = bookingService;
     }
 
     public Venue addVenue(VenueRequestDTO venueRequest) {
@@ -88,22 +93,30 @@ public class VenueService {
         return venueRepository.save(venue);
     }
 
-    public Venue maintanence(Long venueId){
-        Venue v=venueRepository.findById(venueId)
-                .orElseThrow(()->new RuntimeException("venue not found"));
-        v.setStatus(VenueStatus.MAINTANENCE);
+    @Transactional
+    public Venue maintenance(Long venueId, LocalDate date) throws Exception {
 
+        Venue v = venueRepository.findById(venueId)
+                .orElseThrow(() ->
+                        new RuntimeException("Venue not found")
+                );
+        v.setStatus(VenueStatus.MAINTENANCE);
+        Venue savedVenue = venueRepository.save(v);
+        bookingService.cancelBookingsForVenueDate(venueId, date);
 
-        return venueRepository.save(v);
+        return savedVenue;
     }
 
-    public Venue holiday(Long venueId){
-        Venue v=venueRepository.findById(venueId)
-                .orElseThrow(()->new RuntimeException("venue not found"));
-        v.setStatus(VenueStatus.HOLIDAY);
+    @Transactional
+    public Venue holiday(Long venueId, LocalDate date) throws Exception {
 
+        Venue v = venueRepository.findById(venueId)
+                .orElseThrow(() ->new RuntimeException("Venue not found"));
+              v.setStatus(VenueStatus.HOLIDAY);
+              Venue savedVenue = venueRepository.save(v);
+        bookingService.cancelBookingsForVenueDate(venueId,date);
 
-        return venueRepository.save(v);
+        return savedVenue;
     }
 
     public Venue available(Long venueId){

@@ -1,5 +1,6 @@
 package Book.my.sapce.DTO;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import java.time.LocalTime;
 
 @Getter
 @Setter
+@Data
 public class TimeSlotRequestDTO {
 
     private LocalDate slotDate;
@@ -15,4 +17,5 @@ public class TimeSlotRequestDTO {
     private LocalTime startTime;
 
     private LocalTime endTime;
+    private Integer duration;
 }

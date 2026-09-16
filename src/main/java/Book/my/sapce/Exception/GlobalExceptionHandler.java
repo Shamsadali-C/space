@@ -3,7 +3,6 @@ package Book.my.sapce.Exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -24,7 +23,7 @@ public class GlobalExceptionhandler extends RuntimeException{
         public ResponseEntity<?> handleNotFound(ResourceNotFoundException ex) {
 
 //            Map<String, String> error = new HashMap<>();
-//            error.put("message", e.getMessage());
+//            error.put("message", error.get());
 //            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -47,6 +46,21 @@ public class GlobalExceptionhandler extends RuntimeException{
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+
+    @ExceptionHandler(InvalidLoginException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidLogin(
+            InvalidLoginException ex) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("message", ex.getMessage());
+        response.put("status", 401);
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(response);
     }
 }
