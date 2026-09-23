@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class VenueImages {
+public class   VenueImages {
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)

@@ -8,6 +8,7 @@ import Book.my.sapce.Repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -197,6 +198,41 @@ public class VenueImagesService {
             throw new RuntimeException(
                     "Image update failed"
             );
+        }
+    }
+
+    private void deletePhysicalFile(String imageName) {
+
+        if (imageName == null || imageName.isBlank()) {
+            return;
+        }
+
+        File file = new File(FILE_UPLOAD_DIR, imageName);
+
+        if (file.exists()) {
+
+            boolean deleted = file.delete();
+
+            System.out.println(
+                    "Image file deleted: "
+                            + file.getAbsolutePath()
+                            + " -> "
+                            + deleted
+            );
+        }
+    }
+
+    @Transactional
+    public void deleteImagesByVenue(Long venueId) {
+
+        List<VenueImages> images =
+                venueImagesRepository.findByVenueId(venueId);
+
+        for (VenueImages image : images) {
+
+            deletePhysicalFile(image.getImageUrl());
+
+            venueImagesRepository.delete(image);
         }
     }
 }
