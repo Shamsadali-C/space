@@ -3,6 +3,7 @@ package Book.my.sapce.Service;
 import Book.my.sapce.DTO.VenueRequestDTO;
 import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.UserRepository;
+import Book.my.sapce.Repository.VenueBlockedDateRepository;
 import Book.my.sapce.Repository.VenueRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
@@ -21,15 +22,20 @@ public class VenueService {
     private final VenueRepository venueRepository;
     private final UserRepository userRepository;
     private final BookingService bookingService;
-
+    private final VenueImagesService venueImagesService;
+    private final VenueBlockedDateRepository venueBlockedDateRepository;
     public VenueService(
             VenueRepository venueRepository,
             UserRepository userRepository,
-            BookingService bookingService) {
+            BookingService bookingService,
+            VenueImagesService venueImagesService,
+            VenueBlockedDateRepository venueBlockedDateRepository) {
 
         this.venueRepository = venueRepository;
         this.userRepository = userRepository;
         this.bookingService = bookingService;
+        this.venueImagesService = venueImagesService;
+        this.venueBlockedDateRepository = venueBlockedDateRepository;
     }
 
     public Venue addVenue(VenueRequestDTO venueRequest) {
@@ -66,8 +72,16 @@ public class VenueService {
         return venueRepository.findAll();
     }
 
+    @Transactional
     public void deleteVenue(Long id) {
-        venueRepository.deleteById(id);
+
+        Venue venue = venueRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Venue not found"));
+
+        venueImagesService.deleteImagesByVenue(id);
+
+        venueRepository.delete(venue);
     }
 
 
@@ -96,27 +110,47 @@ public class VenueService {
     @Transactional
     public Venue maintenance(Long venueId, LocalDate date) throws Exception {
 
-        Venue v = venueRepository.findById(venueId)
-                .orElseThrow(() ->
-                        new RuntimeException("Venue not found")
-                );
-        v.setStatus(VenueStatus.MAINTENANCE);
-        Venue savedVenue = venueRepository.save(v);
+        Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() -> new RuntimeException("Venue not found"));
+
+        VenueBlockedDate blockedDate =
+                venueBlockedDateRepository
+                        .findByVenueIdAndBlockedDate(venueId, date)
+                        .orElseGet(VenueBlockedDate::new);
+
+        blockedDate.setVenue(venue);
+        blockedDate.setBlockedDate(date);
+        blockedDate.setStatus(VenueStatus.MAINTENANCE);
+
+        venueBlockedDateRepository.save(blockedDate);
+
+        // Cancel paid bookings on this date and refund 100%
         bookingService.cancelBookingsForVenueDate(venueId, date);
 
-        return savedVenue;
+        return venue;
     }
 
     @Transactional
     public Venue holiday(Long venueId, LocalDate date) throws Exception {
 
-        Venue v = venueRepository.findById(venueId)
-                .orElseThrow(() ->new RuntimeException("Venue not found"));
-              v.setStatus(VenueStatus.HOLIDAY);
-              Venue savedVenue = venueRepository.save(v);
-        bookingService.cancelBookingsForVenueDate(venueId,date);
+        Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() -> new RuntimeException("Venue not found"));
 
-        return savedVenue;
+        VenueBlockedDate blockedDate =
+                venueBlockedDateRepository
+                        .findByVenueIdAndBlockedDate(venueId, date)
+                        .orElseGet(VenueBlockedDate::new);
+
+        blockedDate.setVenue(venue);
+        blockedDate.setBlockedDate(date);
+        blockedDate.setStatus(VenueStatus.HOLIDAY);
+
+        venueBlockedDateRepository.save(blockedDate);
+
+        // Cancel paid bookings on this date and refund 100%
+        bookingService.cancelBookingsForVenueDate(venueId, date);
+
+        return venue;
     }
 
     public Venue available(Long venueId){
