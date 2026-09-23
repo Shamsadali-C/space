@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -37,4 +38,6 @@ public class TimeSlot {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TimeSlotStatus status;
+
+    private LocalDateTime holdExpiresAt;
 }

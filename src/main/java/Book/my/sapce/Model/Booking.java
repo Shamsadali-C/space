@@ -56,6 +56,9 @@ public class Booking {
 
     private LocalDateTime cancelledAt;
 
+    private LocalDateTime holdExpiresAt;
+
+
 //    @ManyToOne
 //    @JoinColumn(name = "time_slot_id", nullable = false)
 //    private TimeSlot timeSlot;

@@ -4,6 +4,7 @@ import Book.my.sapce.DTO.*;
 import Book.my.sapce.Model.*;
 import Book.my.sapce.Repository.OwnerRequestRepository;
 import Book.my.sapce.Repository.UserRepository;
+import Book.my.sapce.Repository.VenueBlockedDateRepository;
 import Book.my.sapce.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -27,6 +30,7 @@ public class UserController {
     private final VenueImagesService venueImagesService;
     private final OwnerRequestRepository ownerRequestRepository;
     private final TimeSlotService timeSlotService;
+    private final VenueBlockedDateRepository venueBlockedDateRepository;
 
     public UserController(UserService userService,
                           UserRepository userRepository,
@@ -34,7 +38,8 @@ public class UserController {
                           BookingService bookingService,
                           VenueImagesService venueImagesService,
                           OwnerRequestRepository ownerRequestRepository,
-                          TimeSlotService timeSlotService){
+                          TimeSlotService timeSlotService,
+                          VenueBlockedDateRepository venueBlockedDateRepository){
 
         this.userService=userService;
         this.userRepository=userRepository;
@@ -43,6 +48,7 @@ public class UserController {
         this.venueImagesService=venueImagesService;
         this.ownerRequestRepository=ownerRequestRepository;
         this.timeSlotService=timeSlotService;
+        this.venueBlockedDateRepository = venueBlockedDateRepository;
     }
 
 
@@ -63,36 +69,18 @@ public class UserController {
 //
 
     @PreAuthorize("hasRole('USER')")
-    @PutMapping("/user/booking/{bookingId}/cancel")
-    public ResponseEntity<?> cancelBooking(
-            @PathVariable Long bookingId,
-            Authentication authentication) {
+    @PutMapping("/booking/{bookingId}/cancel")
+    public ResponseEntity<?> cancelBooking(@PathVariable Long bookingId,Authentication authentication) {
 
         try {
+            User user = userRepository.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-            User user =
-                    userRepository
-                            .findByUsername(
-                                    authentication.getName()
-                            )
-                            .orElseThrow(() ->
-                                    new RuntimeException(
-                                            "User not found"
-                                    ));
-
-            Booking booking =
-                    bookingService.cancelBooking(
-                            user.getId(),
-                            bookingId
-                    );
-
+            Booking booking =bookingService.cancelBooking( user.getId(), bookingId );
             return ResponseEntity.ok(booking);
 
         } catch (Exception e) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -104,8 +92,7 @@ public class UserController {
     String username = authentication.getName();
 
     User user = userRepository.findByUsername(username)
-            .orElseThrow(() ->
-                    new RuntimeException("User not found"));
+            .orElseThrow(() ->new RuntimeException("User not found"));
 
     user.setUsername(userData.getUsername());
     user.setEmail(userData.getEmail());
@@ -154,8 +141,7 @@ public class UserController {
                 );
 
         if (existingRequest.isPresent()) {
-            return ResponseEntity.badRequest()
-                    .body("You already have a pending owner request");
+            return ResponseEntity.badRequest().body("You already have a pending owner request");
         }
 
         OwnerRequest request = OwnerRequest.builder()
@@ -333,13 +319,32 @@ public class UserController {
     }
 
     @GetMapping("/venues/{venueId}/slots")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> getSlots(
+    public ResponseEntity<?> getTimeSlots(
             @PathVariable Long venueId,
             @RequestParam LocalDate date) {
 
-        return ResponseEntity.ok(timeSlotService.getSlots(
+        Optional<VenueBlockedDate> blockedDate =
+                venueBlockedDateRepository
+                        .findByVenueIdAndBlockedDate(venueId, date);
+
+        if (blockedDate.isPresent()) {
+
+            Map<String, Object> response = new HashMap<>();
+
+            response.put("available", false);
+            response.put("date", date);
+            response.put("status",
+                    blockedDate.get().getStatus().name());
+
+            return ResponseEntity.ok(response);
+        }
+
+        List<TimeSlot> slots =
+                timeSlotService.getSlots(
                         venueId,
-                        date));
+                        date
+                );
+
+        return ResponseEntity.ok(slots);
     }
 }

@@ -212,83 +212,146 @@ public class BookingService {
     @Transactional
     public Booking cancelBooking(Long userId, Long bookingId) throws Exception {
 
-        Booking booking = bookingRepository.findByIdAndUserId(bookingId, userId)
+        Booking booking = bookingRepository
+                .findByIdAndUserId(bookingId, userId)
                 .orElseThrow(() ->new RuntimeException("Booking not found"));
 
         if (booking.getBookingStatus() != BookingStatus.BOOKED) {
             throw new RuntimeException("Only booked reservations can be cancelled");
         }
+
         if (booking.getPaymentStatus() != PaymentStatus.PAID) {
             throw new RuntimeException("Payment was not completed for this booking");
         }
 
         if (booking.getRazorpayPaymentId() == null) {
+            throw new RuntimeException("Razorpay payment ID not found");
+        }
+
+        LocalDateTime bookingStart =LocalDateTime.of(booking.getBookingDate(), booking.getStartTime());
+
+        LocalDateTime cancellationTime =LocalDateTime.now();
+
+        Duration remainingTime =Duration.between(
+                        cancellationTime,
+                        bookingStart
+                );
+
+        if (remainingTime.isNegative()|| remainingTime.isZero()) {
+
             throw new RuntimeException(
-                    "Razorpay payment ID not found"
+                    "This booking cannot be cancelled because the booking has already started"
             );
         }
 
-        LocalDateTime bookingStart = LocalDateTime.of(booking.getBookingDate(),
-                booking.getStartTime());
-
-        LocalDateTime cancellationTime = LocalDateTime.now();
-
-        long hoursBeforeBooking =Duration.between(cancellationTime,bookingStart).toHours();
-
         double refundPercentage;
 
-        if (hoursBeforeBooking > 48) {
-            refundPercentage = 100.0;}
+        if (remainingTime.compareTo(
+                Duration.ofHours(48)) > 0) {
 
-        else if (hoursBeforeBooking >= 24) {
+            refundPercentage = 100.0;
+
+        } else if (remainingTime.compareTo(
+                Duration.ofHours(24)) >= 0) {
+
             refundPercentage = 75.0;
 
-        } else if (hoursBeforeBooking >= 6) {
+        } else if (remainingTime.compareTo(
+                Duration.ofHours(6)) >= 0) {
+
             refundPercentage = 50.0;
 
         } else {
+
             refundPercentage = 0.0;
         }
 
-        double advanceAmount = booking.getAdvanceAmount();
-        double refundAmount =advanceAmount * refundPercentage / 100.0;
+
+        double advanceAmount =
+                booking.getAdvanceAmount();
+
+        double refundAmount =
+                advanceAmount *
+                        refundPercentage /
+                        100.0;
 
         if (refundAmount > 0) {
 
-            RazorpayClient razorpay = new RazorpayClient(razorpayKeyId,razorpayKeySecret);
-            long refundAmountInPaise =Math.round(refundAmount * 100);
-            JSONObject refundRequest = new JSONObject();
-            refundRequest.put("amount",refundAmountInPaise);
+            RazorpayClient razorpay =
+                    new RazorpayClient(
+                            razorpayKeyId,
+                            razorpayKeySecret
+                    );
 
-            refundRequest.put("speed","normal");
+            long refundAmountInPaise =
+                    Math.round(refundAmount * 100);
 
-            razorpay.payments.refund(booking.getRazorpayPaymentId(),refundRequest);
+            JSONObject refundRequest =
+                    new JSONObject();
 
-            booking.setPaymentStatus(PaymentStatus.REFUNDED);
+            refundRequest.put(
+                    "amount",
+                    refundAmountInPaise
+            );
 
-        }else {
-            booking.setPaymentStatus(PaymentStatus.PAID);
+            refundRequest.put(
+                    "speed",
+                    "normal"
+            );
+
+            Refund refund =
+                    razorpay.payments.refund(
+                            booking.getRazorpayPaymentId(),
+                            refundRequest
+                    );
+
+            System.out.println(
+                    "Razorpay refund created: "
+                            + refund.get("id")
+            );
+
+            booking.setPaymentStatus(
+                    PaymentStatus.REFUNDED
+            );
+
+        } else {
+
+            booking.setPaymentStatus(
+                    PaymentStatus.PAID
+            );
         }
 
-        booking.setRefundAmount(refundAmount);
-        booking.setCancelledAt(cancellationTime);
-        booking.setBookingStatus(BookingStatus.CANCELLED);
+        booking.setRefundAmount(
+                refundAmount
+        );
 
-        List<TimeSlot> slots =timeSlotRepository.findByVenueIdAndSlotDate(booking.getVenue().getId(),
-                booking.getBookingDate());
+        booking.setCancelledAt(
+                cancellationTime
+        );
+
+        booking.setBookingStatus(BookingStatus.CANCELLED
+        );
+
+        List<TimeSlot> slots =
+                timeSlotRepository
+                        .findByVenueIdAndSlotDate(
+                                booking.getVenue().getId(),
+                                booking.getBookingDate()
+                        );
 
         for (TimeSlot slot : slots) {
 
-            boolean insideBooking =!slot.getStartTime()
-                    .isBefore(booking.getStartTime())&&!slot.getEndTime()
-                    .isAfter(booking.getEndTime());
+            boolean insideBooking =!slot.getStartTime().isBefore(booking.getStartTime())&&
+                            !slot.getEndTime().isAfter(booking.getEndTime());
 
-            if (insideBooking&& slot.getStatus() == TimeSlotStatus.BOOKED) {
+            if (insideBooking && slot.getStatus()== TimeSlotStatus.BOOKED) {
+
                 slot.setStatus(TimeSlotStatus.AVAILABLE);
             }
         }
 
         timeSlotRepository.saveAll(slots);
+
         return bookingRepository.save(booking);
     }
 
@@ -329,13 +392,28 @@ public class BookingService {
     @Transactional
     public void cancelBookingWithFullRefund(Booking booking) throws Exception {
 
-        if (booking.getBookingStatus() != BookingStatus.BOOKED) {
+        if (booking.getBookingStatus()
+                != BookingStatus.BOOKED) {
             return;
         }
 
-        double refundAmount = booking.getAdvanceAmount();
+        if (booking.getPaymentStatus()
+                != PaymentStatus.PAID) {
+            return;
+        }
 
-        if (refundAmount > 0 && booking.getRazorpayPaymentId() != null) {
+        double refundAmount =
+                booking.getAdvanceAmount();
+
+        if (refundAmount > 0) {
+
+            if (booking.getRazorpayPaymentId() == null) {
+
+                throw new RuntimeException(
+                        "Razorpay payment ID not found for booking "
+                                + booking.getId()
+                );
+            }
 
             RazorpayClient razorpay =
                     new RazorpayClient(
@@ -346,7 +424,8 @@ public class BookingService {
             long refundAmountInPaise =
                     Math.round(refundAmount * 100);
 
-            JSONObject refundRequest = new JSONObject();
+            JSONObject refundRequest =
+                    new JSONObject();
 
             refundRequest.put(
                     "amount",
@@ -358,50 +437,65 @@ public class BookingService {
                     "normal"
             );
 
-            razorpay.payments.refund(
-                    booking.getRazorpayPaymentId(),
-                    refundRequest
+            Refund refund =
+                    razorpay.payments.refund(
+                            booking.getRazorpayPaymentId(),
+                            refundRequest
+                    );
+
+            System.out.println(
+                    "Razorpay refund created: "
+                            + refund.get("id")
+            );
+
+            booking.setPaymentStatus(
+                    PaymentStatus.REFUNDED
+            );
+
+        } else {
+
+            booking.setPaymentStatus(
+                    PaymentStatus.PAID
             );
         }
 
-        // Booking cancelled
         booking.setBookingStatus(
                 BookingStatus.CANCELLED
         );
 
-        // Full refund
         booking.setRefundAmount(
                 refundAmount
         );
 
-        // Payment refunded
-        booking.setPaymentStatus(
-                PaymentStatus.REFUNDED
-        );
-
-        // Cancellation time
         booking.setCancelledAt(
                 LocalDateTime.now()
         );
 
-        // Release the booking's slots
         List<TimeSlot> slots =
-                timeSlotRepository.findByVenueIdAndSlotDate(
-                        booking.getVenue().getId(),
-                        booking.getBookingDate()
-                );
+                timeSlotRepository
+                        .findByVenueIdAndSlotDate(
+                                booking.getVenue().getId(),
+                                booking.getBookingDate()
+                        );
 
         for (TimeSlot slot : slots) {
 
             boolean insideBooking =
                     !slot.getStartTime()
-                            .isBefore(booking.getStartTime())
-                            &&
-                            !slot.getEndTime()
-                                    .isAfter(booking.getEndTime());
+                            .isBefore(
+                                    booking.getStartTime()
+                            )
 
-            if (insideBooking &&
-                    slot.getStatus() == TimeSlotStatus.BOOKED) {
+                            &&
+
+                            !slot.getEndTime()
+                                    .isAfter(
+                                            booking.getEndTime()
+                                    );
+
+            if (insideBooking
+                    && slot.getStatus()
+                    == TimeSlotStatus.BOOKED) {
 
                 slot.setStatus(
                         TimeSlotStatus.AVAILABLE
